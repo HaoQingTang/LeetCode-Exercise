@@ -1,0 +1,33 @@
+【C++】
+
+一：
+class Solution {
+public:
+    int Fibonacci(int n) {
+        vector<int> list1;
+        for(int i=1;i<=n;i++){
+            if(i==1){
+                int x = 1;
+                list1.push_back(x);
+            }
+            else if(i==2){
+                int x = 1;
+                list1.push_back(x);
+            }
+            else{
+                int x = list1[i-2]+list1[i-3];
+                list1.push_back(x);
+            }
+        }
+        return list1[n-1];
+    }
+};
+
+二：
+class Solution {
+public:
+    int Fibonacci(int n) {
+        if (n<=2) return 1;
+        return Fibonacci(n-1) + Fibonacci(n-2);
+    }
+};
