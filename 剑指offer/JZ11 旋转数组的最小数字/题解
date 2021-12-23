@@ -1,0 +1,46 @@
+【C++】
+
+一：二分法
+class Solution {
+public:
+    int minNumberInRotateArray(vector<int> rotateArray) {
+        int len = rotateArray.size();
+        int left = 0;
+        int right = len-1;
+        while(left<=right){
+            if (rotateArray[left]<rotateArray[right]){
+                return rotateArray[left];
+            }
+            int middle = (left+right)/2;
+            int target = right;
+            if(rotateArray[target]<rotateArray[middle]){
+                left = middle+1;
+            }
+            else if(rotateArray[target]>rotateArray[middle]){
+                right = middle;
+            }
+            else{
+                right = right-1;
+            }
+        }
+        return rotateArray[left];
+    }
+};
+
+二：暴力
+class Solution {
+public:
+    int minNumberInRotateArray(vector<int> rotateArray) {
+        int min = rotateArray[0];
+        int len = rotateArray.size();
+        for(int i=1; i<len;i++){
+            if(min<=rotateArray[i]){
+                min = min;
+            }
+            else{
+                min = rotateArray[i];
+            }
+        }
+        return min;
+    }
+};
