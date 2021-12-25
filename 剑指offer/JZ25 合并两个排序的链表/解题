@@ -1,0 +1,64 @@
+【C++】
+
+一：
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* Merge(ListNode* pHead1, ListNode* pHead2) {
+        ListNode* node = new ListNode(-1);
+        ListNode* cur = node;
+        while(pHead1 && pHead2){
+            if(pHead1->val <= pHead2->val){
+                cur->next = pHead1;
+                pHead1 = pHead1->next;
+            }
+            else{
+                cur->next = pHead2;
+                pHead2 = pHead2->next;
+            }
+            cur = cur->next;
+        }
+        if(pHead1){
+            cur->next = pHead1;
+        }
+        else if(pHead2){
+            cur->next = pHead2;
+        }
+        return node->next;
+    }
+};
+
+二：递归
+特殊情况：如果有一个链表为空，返回另一个链表
+如果pHead1 节点值比小pHead2，下一个节点应该是 pHead1，应该return pHead1，在return之前，指定pHead1的下一个节点应该是pHead1.next和pHead2俩链表的合并后的头结点
+如果pHead1 节点值比pHead2大，下一个节点应该是pHead2，应该return pHead2，在return之前，指定pHead2的下一个节点应该是pHead1和pHead2.next俩链表的合并后的头结点
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* Merge(ListNode* pHead1, ListNode* pHead2) {
+        if(!pHead1) return pHead2;
+        if(!pHead2) return pHead1;
+        if(pHead1->val <= pHead2->val){
+            pHead1->next = Merge(pHead1->next, pHead2);
+            return pHead1;
+        }
+        else{
+            pHead2->next = Merge(pHead1, pHead2->next);
+            return pHead2;
+        }
+    }
+};
