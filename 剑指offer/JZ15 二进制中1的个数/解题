@@ -1,0 +1,75 @@
+【C++】
+将十进制转化为二进制或将数字直接看为二进制
+
+一：二进制移位法
+让一个数0x01从右向左与val的每一位进行&操作来判断。
+class Solution {
+public:
+     int  NumberOf1(int n) {
+         int ans = 0;
+         int mark = 0x01;
+         while(mark != 0){
+             if(n & mark) ans += 1;
+             mark <<= 1;
+         }
+         return ans;
+     }
+};
+
+二：每次消去最低位的1
+初始化数量统计变量 ans。
+循环消去最右边的 1 ：当 n = 0时跳出。
+ans += 1 ： 统计变量加 1 ；
+n &= n - 1 ： 消去数字 n 最右边的 1 。
+返回统计数量 ans。
+示例：
+n = 10101000
+n-1 = 10100111
+
+n = n&(n-1) = 10100000
+n-1 = 11011111
+
+n = n&(n-1) = 10000000
+n-1 = 01111111
+
+n = 00000000 结束
+
+class Solution {
+public:
+     int  NumberOf1(int n) {
+         int ans = 0;
+         while(n != 0){
+             ans += 1;
+             n = n & (n-1);
+         }
+         return ans;
+     }
+};
+
+补充：
+除二取模法：
+class Solution {
+public:
+     int  NumberOf1(int n) {
+         int ans = 0;
+         while(n != 0){
+             if(n % 2 == 1) ans += 1;
+             n = n/2;
+         }
+         return ans;
+     }
+};
+和普通的二进制移位法：
+class Solution {
+public:
+     int  NumberOf1(int n) {
+         int ans = 0;
+         while(n != 0){
+             if(n & 1 == 1) ans += 1;
+             n >>= 1;                 //右移
+         }
+         return ans;
+     }
+};
+
+这两种方法对于正数没有问题，但对于负数，会报错。
