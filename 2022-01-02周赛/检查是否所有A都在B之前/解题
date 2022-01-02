@@ -1,0 +1,21 @@
+【C++】
+
+class Solution {
+public:
+    bool checkString(string s) {
+        int len = s.length();
+        vector<int> numA;
+        vector<int> numB;
+        for(int i=0; i<len; i++){
+            if(s[i]=='a'){
+                numA.push_back(i);
+            }
+            else numB.push_back(i);
+        }
+        int lenA = numA.size();
+        int lenB = numB.size();
+        if(lenA==0 || lenB==0) return true;
+        else if(numA[lenA-1]<numB[0]) return true;
+        else return false;
+    }
+};
