@@ -1,0 +1,25 @@
+【C++】
+数每行1的数量
+
+class Solution {
+public:
+    int numberOfBeams(vector<string>& bank) {
+        int x = bank.size();
+        int y = bank[0].size();
+        vector<int> nums;
+        for(int i=0; i<x; i++){
+            int num = 0;
+            for(int j=0; j<y; j++){
+                if(bank[i][j]=='1') num += 1;
+            }
+            if(num!=0) nums.push_back(num);
+        }
+        int len = nums.size();
+        if(len<=1) return 0;
+        int sum = 0;
+        for(int g=0; g<len-1; g++){
+            sum += (nums[g] * nums[g+1]);
+        }
+        return sum;
+    }
+};
