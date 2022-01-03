@@ -1,0 +1,37 @@
+【C++】
+
+一：哈希
+class Solution {
+public:
+    int FirstNotRepeatingChar(string str) {
+        unordered_map<char,int> map;
+        for(auto ch:str){
+            map[ch] += 1;
+        }
+        int len = str.size();
+        for(int i=0; i<len; i++){
+            if(map[str[i]]==1){
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+
+二：数组
+class Solution {
+public:
+    int FirstNotRepeatingChar(string str) {
+        int map[128]={0};
+        for(auto ch:str){
+            map[ch] += 1;
+        }
+        int len = str.size();
+        for(int i=0; i<len; i++){
+            if(map[str[i]]==1){
+                return i;
+            }
+        }
+        return -1;
+    }
+};
