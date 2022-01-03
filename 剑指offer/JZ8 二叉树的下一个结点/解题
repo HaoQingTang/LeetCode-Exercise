@@ -1,0 +1,88 @@
+【C++】
+
+一：暴力解法
+（1）根据给出的结点求出整棵树的根节点
+（2）根据根节点递归求出树的中序遍历，存入vector
+（3）在vector中查找当前结点，则当前结点的下一结点即为所求。
+虽然有点暴力，但是时间复杂度也是线性的，第一步：最坏为O(N), N为整棵树结点的个数。第二步：O(N), 第三步：最坏为O(N),
+所以整的时间复杂度：3*O(N)。
+
+/*
+struct TreeLinkNode {
+    int val;
+    struct TreeLinkNode *left;
+    struct TreeLinkNode *right;
+    struct TreeLinkNode *next;
+    TreeLinkNode(int x) :val(x), left(NULL), right(NULL), next(NULL) {
+        
+    }
+};
+*/
+class Solution {
+public:
+    void pre_search(TreeLinkNode* root, vector<TreeLinkNode*> &list){
+        while(!root){
+            return;
+        }
+        pre_search(root->left, list);
+        list.push_back(root);
+        pre_search(root->right, list);
+    }
+    
+    TreeLinkNode* GetNext(TreeLinkNode* pNode) {
+        TreeLinkNode* root = nullptr;
+        TreeLinkNode* tmp = pNode;
+        while(tmp){
+            root = tmp;
+            tmp = tmp->next;
+        }
+        vector<TreeLinkNode*> list;
+        pre_search(root, list);
+        int len = list.size();
+        for(int i=0; i<len; i++){
+            if(list[i] == pNode) return list[i+1];
+        }
+        return nullptr;
+    }
+};
+
+二：最优
+把中序（DBHEIAFCG）下一结点归为几种类型：
+1、有右子树，下一结点是右子树中的最左结点，例如 B，下一结点是 H
+2、无右子树，且结点是该结点父结点的左子树，则下一结点是该结点的父结点，例如 H，下一结点是 E
+3、无右子树，且结点是该结点父结点的右子树，则一直沿着父结点追朔，直到找到某个结点是其父结点的左子树，如果存在这样的结点，那么这个结点的父结点就是我们要找的下一结点。
+
+/*
+struct TreeLinkNode {
+    int val;
+    struct TreeLinkNode *left;
+    struct TreeLinkNode *right;
+    struct TreeLinkNode *next;
+    TreeLinkNode(int x) :val(x), left(NULL), right(NULL), next(NULL) {
+        
+    }
+};
+*/
+class Solution {
+public:
+    TreeLinkNode* GetNext(TreeLinkNode* pNode) {
+        if(!pNode){
+            return pNode;
+        }
+        if(pNode->right){     //有右节点
+            pNode = pNode->right;
+            while(pNode->left){
+                pNode = pNode->left;
+            }
+            return pNode;
+        }
+        while(pNode->next){     //无右节点，返回根结点
+            TreeLinkNode* root = pNode->next;
+            if(root->left == pNode){
+                return root;
+            }
+            pNode = pNode->next;
+        }
+        return nullptr;
+    }
+};
