@@ -1,0 +1,72 @@
+【C++】
+
+一：递归
+二叉树的前序遍历：根左右；中序遍历：左根右
+（1）由前序遍历知道根节点之后，能在中序遍历上划分出左子树和右子树。分别对中序遍历的左右子树递归进行这一过程即可建树。
+（2）递归函数功能定义：根据前序和中序遍历获取当前递归的根节点
+（3）递归终止条件：前序遍历数组长度为1，直接返回，表示已经递归到最右叶子节点
+（4）前序遍历的首元素就是当前递归层次的根节点
+（5）确定左右子树的范围 ，从中间向两边查找跟节点索引，从中序遍历中根据根节点的值找到中序遍历数组中根节点的索引
+（6）当前根节点的左子节点为左子树的跟节点，拼接、构建二叉树即可
+
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* reConstructBinaryTree(vector<int> pre,vector<int> vin) {
+        if(pre.size()==0 || pre.size()!=vin.size()) return nullptr;
+        int root = pre[0];
+        TreeNode* node = new TreeNode(root);
+        if(pre.size()==1) return node;
+        auto pos = find(vin.begin(), vin.end(), root);
+        int leftsize = pos-vin.begin();
+        //int rightsize = vin.end()-pos-1;
+        node->left = reConstructBinaryTree({pre.begin()+1,pre.begin()+1+leftsize},
+                                           {vin.begin(),vin.begin()+leftsize});
+        node->right = reConstructBinaryTree({pre.begin()+1+leftsize,pre.end()},
+                                            {vin.begin()+1+leftsize,vin.end()});
+        return node;
+    }
+};
+
+二：指针
+设置三个指针，一个是preStart，表示的是前序遍历开始的位置，一个是inStart，表示的是中序遍历开始的位置。一个是inEnd，表示的是中序遍历结束的位置，我们主要是对中序遍历的数组进行拆解。
+只要找到了前序遍历的结点在中序遍历的位置，我们就可以把中序遍历数组分解为左右子树两部分。
+1、如果index是前序遍历的某个值在中序遍历数组中的索引，以index为根节点划分，在中序遍历中，[0，index-1]就是根节点左子树的所有节点，[index+1，vin.length-1]就是根节点右子树的所有节点
+2、对于前序序列，针对左子树，preStart=index+1，如果是右子树就稍微麻烦点，preStart=preStart+(index-inStart+1)，preStart是当前节点比如m先序遍历开始的位置，index-inStart+1就是当前节
+点m左子树的数量加上当前节点的数量，所以preStart+(index-instart+1)就是当前节点m右子树前序遍历开始的位置
+
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* dfs(int preStart, int vinStart, int vinEnd, vector<int> preorder, vector<int> vinorder){
+        if(preStart>preorder.size()-1 ||vinStart>vinEnd) return nullptr;
+        TreeNode* root = new TreeNode(preorder[preStart]);
+        int index = 0;
+        for(int i=vinStart; i<=vinEnd; i++){
+            if(vinorder[i]==root->val) index=i;
+        }
+        root->left = dfs(preStart+1,vinStart,index-1,preorder,vinorder);
+        root->right = dfs(preStart+(index-vinStart+1),index+1,vinEnd,preorder,vinorder);
+        return root;
+    }
+    
+    TreeNode* reConstructBinaryTree(vector<int> pre,vector<int> vin) {
+        return dfs(0,0,vin.size()-1,pre,vin);
+    }
+};
