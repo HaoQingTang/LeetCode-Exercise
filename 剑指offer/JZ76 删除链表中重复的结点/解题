@@ -1,0 +1,91 @@
+【C++】
+
+一：哈希
+根据题意，显然如果能够知道重复的值是什么，然后再遍历一次单链表，删除重复值即可。
+找重复值的具体步骤：
+1.初始化：set<int> st
+2. 遍历单链表相邻两个元素，如果相等，就加入到set当中
+3. 直到单链表遍历完</int>
+
+删除重复值的具体步骤：
+1.初始化：pre指针指向重复值的前一个节点，cur指向当前遍历的节点值
+2.遍历单链表当前元素，然后再set中检查，如果是重复值，就删除，pre->next = cur->next
+3. 否则，不是重复值，pre = pre->next, cur = cur->next
+4. 知道单链表遍历完
+
+/*
+struct ListNode {
+    int val;
+    struct ListNode *next;
+    ListNode(int x) :
+        val(x), next(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    ListNode* deleteDuplication(ListNode* pHead) {
+        unordered_set<int> list;
+        ListNode* pre = pHead;
+        ListNode* cur = pHead->next;
+        if(!pHead) return nullptr;
+        while(cur){                              //将重复的数值放入哈希表
+            if(pre->val==cur->val){
+                list.insert(pre->val);
+            }
+            pre = pre->next;
+            cur = cur->next;
+        }
+        ListNode* vHead = new ListNode(-1);
+        vHead->next = pHead;
+        pre = vHead;
+        cur = pHead;
+        while(cur){
+            if(list.count(cur->val)){
+                cur = cur->next;
+                pre->next = cur;
+            }
+            else{
+                cur = cur->next;
+                pre = pre->next;
+            }
+        }
+        return vHead->next;
+    }
+};
+
+二：直接删除
+在遍历单链表的时候，检查当前节点与下一点是否为相同值，如果相同，继续查找祥同值的最大长度，然后指针改变指向
+/*
+struct ListNode {
+    int val;
+    struct ListNode *next;
+    ListNode(int x) :
+        val(x), next(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    ListNode* deleteDuplication(ListNode* pHead) {
+        ListNode* vHead = new ListNode(-1);
+        vHead->next = pHead;
+        ListNode* pre = vHead;
+        ListNode* cur = pHead;
+        while(cur){
+            if(cur->next && cur->next->val==cur->val){
+                cur = cur->next;
+                while(cur->next && cur->next->val==cur->val){
+                    cur = cur->next;
+                }
+                cur = cur->next;
+                pre->next = cur;
+            }
+            else{
+                pre = cur;
+                cur = cur->next;
+            }
+        }
+        return vHead->next;
+    }
+};
