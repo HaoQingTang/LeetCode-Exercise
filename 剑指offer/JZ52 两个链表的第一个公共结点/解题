@@ -1,0 +1,60 @@
+【C++】
+
+一：数组
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* FindFirstCommonNode( ListNode* pHead1, ListNode* pHead2) {
+        vector<ListNode*> list1;
+        vector<ListNode*> list2;
+        while(pHead1){
+            list1.push_back(pHead1);
+            pHead1 = pHead1->next;
+        }
+        while(pHead2){
+            list2.push_back(pHead2);
+            pHead2 = pHead2->next;
+        }
+        ListNode* tmp = nullptr;
+        int len1 = list1.size();
+        int len2 = list2.size();
+        for(int i=0; i<len1; i++){
+            for(int j=0; j<len2; j++){
+                if(list1[i] == list2[j]){
+                    tmp = list1[i];
+                    return tmp;
+                }
+            }
+        }
+        return nullptr;
+    }
+};
+
+二：指针
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* FindFirstCommonNode( ListNode* pHead1, ListNode* pHead2) {
+        ListNode* ta = pHead1;
+        ListNode* tb = pHead2;
+        while(ta!=tb){
+            ta = (ta)?ta->next:pHead2;
+            tb = (tb)?tb->next:pHead1;
+        }
+        return ta;
+    }
+};
