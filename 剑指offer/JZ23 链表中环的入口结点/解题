@@ -1,0 +1,78 @@
+【C++】
+
+一：哈希表（unordered_set）
+（1）遍历单链表的每个结点
+（2）如果当前结点地址没有出现在set中，则存入set中
+（3）否则，出现在set中，则当前结点就是环的入口结点
+（4）整个单链表遍历完，若没出现在set中，则不存在环
+
+/*
+struct ListNode {
+    int val;
+    struct ListNode *next;
+    ListNode(int x) :
+        val(x), next(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    ListNode* EntryNodeOfLoop(ListNode* pHead) {
+        unordered_set<ListNode*> list;
+        while(pHead){
+            //查找以值为 key 的元素，如果找到，则返回一个指向该元素的正向迭代器；反之，则返回一个指向容器中最后一个元素之后位置的迭代器（如果 end() 方法返回的迭代器）。
+            if(list.find(pHead)==list.end()){
+                list.insert(pHead);
+                pHead = pHead->next;
+            }
+            else{
+                return pHead;
+            }
+        }
+        return nullptr;
+    }
+};
+
+二：双指针（fast和slow）
+(1)初始化：快指针fast指向头结点， 慢指针slow指向头结点
+(2)让fast一次走两步， slow一次走一步，第一次相遇在C处，停止
+(3)然后让fast指向头结点，slow原地不动，让后fast，slow每次走一步，当再次相遇，就是入口结点。
+
+（为了便于分析，上图所展示的是假设快指针只比慢指针多走了一圈就相遇的情况，也即快指针所走过的路程为A->B->C->D->B->C，而慢指针所走过的路程为A->B->C）
+假设慢指针slow从头结点A第一次走到了环的入口结点B处时所走过的路程为X，且设环的入口结点B到达快慢指针相遇结点C处的路程为Y， 那么fast指针应该停留在D点处，且D->B的路程为Y，因为快指针fast的速度是慢指针slow的两倍且快慢指针最终同时到达相遇结点C处，
+也即 D->B->C的路程 = 2*(B->C的路程)，
+也即D->B的路程 + B->C的路程 = 2*(B->C的路程)
+化简后可得 D->B的路程 = B->C的路程 = Y
+
+同样由于快指针的总路程是慢指针的两倍，可得 C->D->B->C的路程（也即环的周长）为X+Y，而B->C的路程上文已设为Y，也即C->D->B的路程为X。
+
+那么在快慢指针同时到达相遇结点C处时，将快指针fast重新放到头结点A，慢指针slow的位置不变，且快指针的速度改为与慢指针slow相同，那么快指针fast从头结点A走过X路程后到达环的入口结点B，慢指针slow从快慢指针相遇节点C走过x路程后也到达了环的入口结点B，也即他们再次相遇时的节点就是环的入口结点。
+
+/*
+struct ListNode {
+    int val;
+    struct ListNode *next;
+    ListNode(int x) :
+        val(x), next(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    ListNode* EntryNodeOfLoop(ListNode* pHead) {
+        ListNode* fast = pHead;
+        ListNode* slow = pHead;
+        while(fast&&fast->next){
+            fast = fast->next->next;
+            slow = slow->next;
+            if(fast == slow) break;
+        }
+        if(!fast||!fast->next) return nullptr;
+        fast = pHead;
+        while(fast!=slow){
+            fast = fast->next;
+            slow = slow->next;
+        }
+        return fast;
+    }
+};
