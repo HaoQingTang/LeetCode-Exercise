@@ -1,0 +1,67 @@
+【C++】
+
+一：分治法
+分治法简介：求一个规模为n的问题，先求左边规模大约为n/2的问题，再求右边规模大约为n/2的问题，然后合并左边，右边的解，从而求得最终解。具体可参考归并排序。 
+步骤：
+（1）求 pro(left, rigth) -> int
+（2）先求pro(left, (left+right)/2) -> lval
+（3）再求pro((left+right)/2 + 1, right) -> rval
+（4）merge(lval, rval) -> result
+这里以本题为具体例子： 函数是求二叉树的最大深度，我们不必管函数具体是怎么实现的。 所以最终结果为 max( 头结点左子树的最大深度, 头结点右子树的最大深度)+1
+
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    int TreeDepth(TreeNode* pRoot) {
+        if(!pRoot) return 0;
+        int lval = TreeDepth(pRoot->left);
+        int rval = TreeDepth(pRoot->right);
+        return max(lval,rval)+1;
+    }
+};
+
+二：层次遍历
+求最大深度，可用队列。因为要满足先进先出的特性。
+步骤：
+（1）初始化：一个队列queue<treenode*> q， 将root节点入队列q
+（2）如果队列不空，做如下操作：
+（3）弹出队列头，保存为node，将node的左右非空孩子加入队列
+（4）做2,3步骤，知道队列为空
+
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    int TreeDepth(TreeNode* pRoot) {
+        if(!pRoot) return 0;
+        queue<TreeNode*> q;
+        q.push(pRoot);
+        int depth = 0;
+        while(!q.empty()){
+            int len = q.size();
+            while(len--){
+                auto root = q.front();
+                q.pop();
+                if(root->left) q.push(root->left);
+                if(root->right) q.push(root->right);
+            }
+            depth += 1;
+        }
+        return depth;
+    }
+};
