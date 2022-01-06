@@ -1,0 +1,87 @@
+【C++】
+
+一：bfs+队列
+奇数层：从左到右；偶数层：从右到左
+
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    vector<vector<int> > Print(TreeNode* pRoot) {
+        vector<vector<int>> total;
+        if(!pRoot) return total;
+        queue<TreeNode*> q;
+        q.push(pRoot);
+        int level = 0;
+        while(!q.empty()){
+            int len = q.size();
+            vector<int> piece;
+            while(len--){
+                auto root = q.front();
+                q.pop();
+                piece.push_back(root->val);
+                if(root->left) q.push(root->left);
+                if(root->right) q.push(root->right);
+            }
+            level += 1;
+            if(level%2==0) reverse(piece.begin(), piece.end());     //偶数层，数组反转
+            total.push_back(piece);
+        }
+        return total;
+    }
+};
+
+二：栈
+（1）定义两个栈stk1，stk2；将根结点入栈stk1；
+（2）对于下一层，应是「从右至左」打印，因此需要遍历栈stk1、访问每一个元素，并将每一元素的孩子按照「先右孩子、后左孩子」的顺序入栈stk2；将访问的结点保存；
+（3）对于下一层，应是「从左至右」打印，因此需要遍历栈stk2、访问每一个元素，并将每一元素的孩子按照「先左孩子、后右孩子」的顺序入栈stk1；将访问的结点保存；
+（4）重复上述操作，直至两个栈全为空。
+
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    vector<vector<int> > Print(TreeNode* pRoot) {
+        vector<vector<int>> total;
+        if(!pRoot) return total;
+        stack<TreeNode*> stk1,stk2;
+        stk1.push(pRoot);
+        while(!stk1.empty()||!stk2.empty()){
+            vector<int> piece;
+            while(!stk1.empty()){
+                TreeNode* root = stk1.top();
+                stk1.pop();
+                piece.push_back(root->val);
+                if(root->left) stk2.push(root->left);
+                if(root->right) stk2.push(root->right);
+            }
+            if(piece.size()) total.push_back(piece);
+            piece.clear();
+            while(!stk2.empty()){
+                TreeNode* root2 = stk2.top();
+                stk2.pop();
+                piece.push_back(root2->val);
+                if(root2->right) stk1.push(root2->right);
+                if(root2->left) stk1.push(root2->left);
+            }
+            if(piece.size()) total.push_back(piece);
+        }
+        return total;
+    }
+};
