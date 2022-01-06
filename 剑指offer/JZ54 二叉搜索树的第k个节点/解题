@@ -1,0 +1,38 @@
+【C++】
+
+中序遍历得到的数组是升序的
+
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param proot TreeNode类 
+     * @param k int整型 
+     * @return int整型
+     */
+    void presearch(TreeNode* proot, vector<int> &list){
+        if(!proot) return;
+        presearch(proot->left, list);
+        list.push_back(proot->val);
+        presearch(proot->right, list);
+    }
+    
+    int KthNode(TreeNode* proot, int k) {
+        vector<int> list;
+        presearch(proot, list);
+        //sort(list.begin(), list.end());
+        if(k>list.size() || !proot || k<=0) return -1;
+        int val = list[k-1];
+        return val;
+    }
+};
