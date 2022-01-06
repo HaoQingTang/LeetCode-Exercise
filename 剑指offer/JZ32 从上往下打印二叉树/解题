@@ -1,0 +1,36 @@
+【C++】
+
+一：bfs+队列
+这道题就是一个模板题，对队列的使用。因为要满足先进先出的特性。
+
+（1）初始化：一个队列queue<TreeNode*> q， 将root节点入队列q
+（2）如果队列不空，做如下操作：
+（3）弹出队列头，保存为node，将node的左右非空孩子加入队列
+（4）做2,3步骤，知道队列为空
+
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    vector<int> PrintFromTopToBottom(TreeNode* root) {
+        vector<int> list;
+        if(!root) return list;
+        queue<TreeNode*> q;
+        q.push(root);
+        while(!q.empty()){
+            TreeNode* p = q.front();
+            q.pop();
+            list.push_back(p->val);
+            if(p->left) q.push(p->left);
+            if(p->right) q.push(p->right);
+        }
+        return list;
+    }
+};
