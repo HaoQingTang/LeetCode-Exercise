@@ -1,0 +1,37 @@
+1.不需要确定当前遍历到第几层
+void bfs() {
+    vis[] = {0}; // or set
+    queue<int> pq(start_val);
+     
+    while (!pq.empty()) {
+        int cur = pq.front(); pq.pop();
+        for (遍历cur所有的相邻节点nex) {
+            if (nex节点有效 &amp;&amp; vis[nex]==0){
+                vis[nex] = 1;
+                pq.push(nex)
+            }
+        } // end for
+    } // end while
+}
+
+2.需要确定遍历到第几层
+void bfs() {
+    int level = 0;
+    vis[] = {0}; // or set
+    queue<int> pq(original_val);
+    while (!pq.empty()) {
+        int sz = pq.size();
+ 
+        while (sz--) {
+                int cur = pq.front(); pq.pop();
+            for (遍历cur所有的相邻节点nex) {
+                if (nex节点有效 &amp;&amp; vis[nex] == 0) {
+                    vis[nex] = 1;
+                    pq.push(nex)
+                }
+            } // end for
+        } // end inner while
+        level++;
+ 
+    } // end outer while
+}
