@@ -1,0 +1,38 @@
+【C++】
+
+一：递归
+1.这道题判断是否是子结构，主要看pRoot2和pRoot1的根节点的值是否一样，一样的话再同时递归，
+2.判断left节点，如果pRoot2的左节点为null,则说明pRoot2的left节点满足条件。
+3.若pRoot2的节点不为null,并且pRoot1的left节点为null,或者说它们二者的值不一样，说明pRoot2不是pRoot1的子结构。
+4.pRoot1和pRoot2的right节点和第2.3步一样的判断，当left和right同时成立，pRoot2才是pRoot1的子结构
+5.因为题目约定空树不是任意一个数的子结构，所以pRoot1和pRoot2都不能为空，这是返回true的前提条件
+
+递归一：递归判断子树中有无子结构——对应HasSubtree（）
+递归二：判断当前树根是否对应子结构——对应IsSame（）
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    bool IsSame(TreeNode* pRoot1, TreeNode* pRoot2){
+        bool left = true, right = true;
+        if(!pRoot1||pRoot1->val!=pRoot2->val) return false;     //检查根节点是否一致
+        if(pRoot2->left) left = IsSame(pRoot1->left, pRoot2->left);    //递归检查左子树是否一致
+        if(pRoot2->right) right = IsSame(pRoot1->right, pRoot2->right);     //递归检查右子树是否一致
+        return left&&right;
+    }
+    
+    bool HasSubtree(TreeNode* pRoot1, TreeNode* pRoot2) {
+        if(!pRoot1||!pRoot2) return false;
+        if(IsSame(pRoot1, pRoot2)) return true;
+        if(HasSubtree(pRoot1->left, pRoot2)) return true;              //递归检查1的左子树是否和2相同
+        if(HasSubtree(pRoot1->right, pRoot2)) return true;             //递归检查1的右子树是否和2相同
+        return false;
+    }
+};
