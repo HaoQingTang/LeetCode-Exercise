@@ -1,0 +1,87 @@
+【C++】
+
+一：递归交换
+根据二叉树镜像的定义，考虑递归遍历（dfs）二叉树，交换每个节点的左 / 右子节点，即可生成二叉树的镜像。
+本质上是左右子树的交换，通过对左右子树的交换，可以完成二叉树的镜像
+解题步骤：
+1、特判：如果pRoot为空，返回空
+2、交换左右子树
+3、把pRoot的左子树放到Mirror中镜像一下
+4、把pRoot的右子树放到Mirror中镜像一下
+5、返回根节点root
+
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param pRoot TreeNode类 
+     * @return TreeNode类
+     */
+    TreeNode* Mirror(TreeNode* pRoot) {
+        if(!pRoot) return nullptr;
+        if(pRoot){
+            TreeNode* tmp;
+            tmp = pRoot->left;
+            pRoot->left = pRoot->right;
+            pRoot->right = tmp;
+            pRoot->left = Mirror(pRoot->left);
+            pRoot->right = Mirror(pRoot->right);
+        }
+        return pRoot;
+    }
+};
+
+二：栈或队列
+主要是利用栈（或队列）遍历树的所有节点 node ，并交换每个 node 的左 / 右子节点
+算法流程：
+1、特例处理： 当 pRoot为空时，直接返回 null ；
+2、初始化： 栈（或队列），本文用栈stack ，并加入根节点 pRoot。
+3、循环交换： 当栈 stack 为空时跳出；
+      3.1、出栈： 记为 node ；
+      3.2、添加子节点： 将 node 左和右子节点入栈；
+      3.3、交换： 交换 node 的左 / 右子节点。
+4、返回值： 返回根节点 pRoot 。
+
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param pRoot TreeNode类 
+     * @return TreeNode类
+     */
+    TreeNode* Mirror(TreeNode* pRoot) {
+        if(!pRoot) return nullptr;
+        stack<TreeNode*> stk;
+        stk.push(pRoot);
+        while(!stk.empty()){
+            TreeNode* root = stk.top();
+            stk.pop();
+            if(root->left) stk.push(root->left);
+            if(root->right) stk.push(root->right);
+            TreeNode* tmp = root->left;
+            root->left = root->right;
+            root->right = tmp;
+        }
+        return pRoot;
+    }
+};
