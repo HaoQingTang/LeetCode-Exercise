@@ -1,0 +1,57 @@
+【C++】
+
+题目大意：输入一个序列, 判断它是不是某二叉搜索树的后序遍历结果
+
+一：分治
+（1）二叉树的后序遍历顺序是：左子树 -> 右子树 -> 根节点
+（2）因此序列的最后一个数代表了根节点
+（3）因此我们可以将一个序列划分为3段, 左子树+右子树+根, 例如[4, 8, 6, 12, 16, 14, 10]可以根据根节点的值将其划分为左子树[4, 8, 6], 右子树[12, 16, 14], 根[10], 
+由于我们是先确定的右子树区间, 因此当左子树区间中出现大于根节点的值时, 序列不合法, 我们再采用分治的思想, 对于每段序列代表的子树, 检查它的左子树和右子树, 当且仅当左右子树都合法时返回true
+
+class Solution {
+public:
+    bool verify(vector<int> &seq, int begin, int end){
+        if(begin>=end) return true;     //当前子树只有一个节点
+        int root = seq[end];
+        int r = end-1;
+        while(r>=0 && seq[r]>root) r--;        //划分右子树
+        for(int l=begin; l<=r; l++){           //检查左子树是否有大于根节点的树
+            if(seq[l]>root) return false;
+        }
+        return verify(seq, begin, r)&&verify(seq, r+1, end-1);            //分治检查左子树和右子树
+    }
+    
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        int len = sequence.size();
+        if(len==0) return false;         //空树不是二叉搜索树
+        return verify(sequence, 0, len-1);
+    }
+};
+
+二：栈
+（1）实际上二叉树的中序遍历和后序遍历对应着一种栈的压入、弹出序列, 而对后序遍历序列从小到大排序就得到了中序遍历序列
+（2）我们得到中序遍历序列后, 将其作为入栈序列, 检查后序遍历序列是不是一个合法的出栈序列即可
+class Solution {
+public:
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        if(sequence.empty()) return false;
+        vector<int> inorder(sequence);
+        sort(inorder.begin(), inorder.end());
+        return IsPopOrder(inorder, sequence);
+    }
+
+    bool IsPopOrder(vector<int> pushV,vector<int> popV) {
+         int n = pushV.size();
+         stack<int> stk;    // 使用STL中的栈容器
+         int i = 0, j = 0;
+         while(i < n){
+             stk.push(pushV[i]);    // 首先将pushV[i]入栈
+             while(!stk.empty() && stk.top() == popV[j]){    // 不断检查栈顶
+                 ++j;
+                 stk.pop();
+             }
+             ++i;
+         }
+         return j == n;    // 判断能否成功对应
+     }
+};
