@@ -1,0 +1,101 @@
+【C++】
+
+一：先序遍历 递归
+采用递归遍历二叉树的路径节点，同时计算二叉树路径节点的数字之和，当到达叶子节点且路径的数字之和等于 sum 则说明二叉树中存在节点和为指定值的路径
+算法步骤：
+1、特殊情况：当二叉树为空，则返回 false
+2、遍历根节点的左右子树，记录根节点的数字之和 res
+当节点的左右子树均为空，且 res == sum，则返回 true
+3、递归 该节点的左右子树，做上述计算
+
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ * };
+ */
+
+class Solution {
+public:
+    /**
+     * 
+     * @param root TreeNode类 
+     * @param sum int整型 
+     * @return bool布尔型
+     */
+    bool Sum(TreeNode* root, int val, int sum){
+        if(!root) return false;
+        val += root->val;
+        //bool left = true, right = true;
+        if(!root->left && !root->right && val == sum) return true;
+        else if(!root->left && !root->right && val!=sum) return false;
+        else{
+            bool left = Sum(root->left,val,sum);
+            bool right = Sum(root->right,val,sum);
+            return left||right; 
+        }
+    }
+    
+    bool hasPathSum(TreeNode* root, int sum) {
+        if(!root) return false;
+        return Sum(root, 0, sum);
+    }
+};
+
+二：层次遍历
+题解思路： 对树进行层次遍历，遍历到叶节点，判断是否有合法路径。同步推进每一条路径在每一层的值
+算法分析：
+1.首先自定义结构path_sum{TreeNode*, cur_sum}，表示到节点的路径和。
+2. 每次遍历一个节点，将当前节点的val值加上父节点的cur_sum，创建一个path_sum加入队列中。
+3.如果到了叶节点，某个path_sum的cur_sum属性等于sum的值。
+
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ * };
+ */
+
+class Solution {
+public:
+    /**
+     * 
+     * @param root TreeNode类 
+     * @param sum int整型 
+     * @return bool布尔型
+     */
+    struct path_sum{
+        TreeNode* node;
+        int cur_sum;
+        path_sum(TreeNode* root = NULL,int value = 0):node(root),cur_sum(value){};
+    };
+    
+    bool hasPathSum(TreeNode* root, int sum) {
+        if(!root) return false;
+        queue<path_sum*> q;
+        path_sum* head = new path_sum(root,root->val);
+        q.push(head);
+        while(!q.empty()){
+            path_sum* tmp = q.front();
+            q.pop();
+            if(tmp->node->left==NULL&&tmp->node->right==NULL){
+                if(tmp->cur_sum==sum) return true;
+            }
+            else{
+                if(tmp->node->left){
+                    int left_sum = tmp->node->left->val+tmp->cur_sum;
+                    path_sum* left = new path_sum(tmp->node->left,left_sum);
+                    q.push(left);
+                }
+                if(tmp->node->right){
+                    int right_sum = tmp->node->right->val+tmp->cur_sum;
+                    path_sum* right = new path_sum(tmp->node->right,right_sum);
+                    q.push(right);
+                }
+            }
+        }
+        return false;
+    }
+};
