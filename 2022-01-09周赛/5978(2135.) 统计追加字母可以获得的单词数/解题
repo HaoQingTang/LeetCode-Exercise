@@ -1,0 +1,55 @@
+【C++】
+
+一：位运算+哈希表
+由于每个字符串仅含有互不重复的小写英文字母，且转换操作包含任意顺序的重排，因此「目标字符串是否可以获得」与「起始字符串是否可以构成目标字符串」仅取决于对应字符串含有哪些英文字母。
+
+我们可以用一个26 位的二进制整数维护每个单词含有哪些英文字母。具体地，整数的第i 位为1 代表该字符串含有第i 个英文字母；反之亦然。
+那么，我们只需要用哈希集合维护startWords 中每个字符串在转换操作后的所有可能状态，并计算targetWords 中有多少字符串对应的状态包含在该哈希表中即可。
+
+具体地，我们用函数mask(word) 来计算字符串word 对应的状态值，其中我们用整数res 来维护这一状态：
+在遍历word 时，碰到字母表中第i 个字符，我们就对res 从低到高的第i 位对1 取或，即res=res∣(1<<i)。最终，我们返回res 作为字符串word 包含英文字母的状态。
+
+进一步地，我们用哈希集合masks 来维护startWords 中每个字符串在转换操作后的所有可能状态，对于startWords 每个字符串的状态msk，我们遍历它的所有二进制位，
+如果从低到高第i 个二进制位为0，则说明它不含有第i 个字母，我们可以将该字母添加进字符串中，并将新的状态msk∣(1<<i) 添加进哈希集合masks 中作为可以获得的状态；
+如果该二进制位为1，则我们无法将对应英文字母添加进该字符串中，因此我们不进行任何操作。
+
+最终，我们遍历targetWords 中的字符串，计算它对应的包含字母状态，并检查其是否存在于masks 中。在遍历的过程中，我们统计状态位于masks 中的字符串数量，并返回该数量作为答案。
+
+class Solution {
+public:
+    int wordCount(vector<string>& startWords, vector<string>& targetWords) {
+        auto mask=[](const string& word)->int{
+            int ans = 0;
+            for(char ch:word){
+                ans |= 1<<(ch-'a');    //左移（ch-‘a’），补0
+            }
+            return ans;
+        };
+
+        unordered_set<int> set;
+        for(const string& start:startWords){
+            int msk = mask(start);
+            for(int i=0; i<26; i++){
+                if(((msk>>i)&1)==0) set.insert(msk|(1<<i));
+            }
+        } 
+        int cnt = 0;
+        for(const string& target:targetWords){
+            int msk2 = mask(target);
+            if(set.count(msk2)) cnt += 1;
+        }
+        return cnt;
+    }
+};
+
+
+补充：位运算
+逻辑移位：移出去的位丢弃，空缺位（vacant bit）用 0 填充。
+算术移位：移出去的位丢弃，空缺位（vacant bit）用“符号位”来填充，所以一般用在右移运算中。
+1、如果是无符号数，不管是左移还是右移都是“逻辑移位”
+2、如果是有符号数，
+2a，如果是做左移运算，那么做的是“逻辑移位”，同 1中无符号数的左移。
+2b，如果是做右移运算，那么做的是“算术移位”。
+
+左移：把一个数的所有位都向左移动若干位,用<<运算符   如：i = i << 2; //把i里的值左移2位
+右移：把一个数的所有位都向右移动若干位,用>>运算符
