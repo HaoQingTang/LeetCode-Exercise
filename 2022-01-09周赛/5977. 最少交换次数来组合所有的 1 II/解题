@@ -1,0 +1,41 @@
+【C++】
+
+我们首先统计出数组nums 中1 的个数，记为cnt。这样一来，如果我们枚举交换完成之后连续1 的起始位置i，那么结束位置即为 (i+cnt−1)mod n，其中n 是数组nums 的长度。
+
+可以发现，从位置i 开始到位置(i+cnt−1)mod n 结束的这一段区间内，0 的个数即为需要交换的次数。
+这是因为我们每一次交换都需要把区间内的一个0 与区间外的0 进行交换。因此最少的交换次数即为区间内0 的个数的最小值。
+
+我们有两种方法可以计算出这一段区间内0 的个数：
+
+第一种方法是使用前缀和数组。我们使用数组pre 表示数组nums 中0 的个数的前缀和，即pre[i] 表示nums[0..i] 中0 的个数。那么：
+如果i<(i+cnt−1)mod n，那么区间内0 的个数即为：pre[(i+cnt−1)modn]−pre[i−1]
+如果i>(i+cnt−1)mod n，那么区间内0 的个数即为：pre[(i+cnt−1)modn]+(pre[n−1]−pre[i−1])
+
+第二种方法是递增地枚举i 并实时维护区间内0 的个数。我们首先统计i=0 时区间[0,cnt) 内0 的个数，随后从1 开始递增地枚举i。
+当起始位置从i−1 增加到i 时，nums[i−1] 被从区间内移除，而nums[(i+cnt−1)modn] 被加入区间内。因此如果前者为0，就将0 的个数减少1；如果后者为0，就将0 的个数增加1。
+
+下面的代码给出的是第二种方法的实现。
+第二种实际使用了滑动窗口：
+（1）数出一共有多少个 1
+（2）使用滑动窗口，以 1 的总数为窗口大小
+（3）计算窗口内 0 的个数，最少的即为需要交换的次数
+
+class Solution {
+public:
+    int minSwaps(vector<int>& nums) {
+        int ones = accumulate(nums.begin(),nums.end(),0);  //数组求和再加上0——数1的数量
+        if(ones==0) return 0;
+        int len = nums.size();
+        int zeros = 0;
+        for(int i=0; i<ones; i++){
+            if(nums[i]==0) zeros += 1;           //数长度为ones的滑动窗口内0的个数
+        }
+        int ans = zeros;
+        for(int j=1; j<len; j++){
+            if(nums[j-1]==0) zeros--;
+            if(nums[(j+ones-1)%len]==0) zeros++;
+            ans = min(ans,zeros);
+        } 
+        return ans;
+    }
+};
