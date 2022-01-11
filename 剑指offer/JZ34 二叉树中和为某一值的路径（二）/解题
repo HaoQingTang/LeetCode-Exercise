@@ -1,0 +1,87 @@
+【C++】
+
+一：递归（dfs） 回溯
+递归算法三部曲：
+（1）明白递归函数的功能：FindPath(TreeNode* root,int sum)，从root节点出发，找和为sum的路径
+（2）递归终止条件：当root节点为叶子节点并且sum==root->val, 表示找到了一条符合条件的路径
+（3）下一次递归：如果左子树不空，递归左子树FindPath(root->left, sum - root->val),如果右子树不空，递归右子树，FindPath(root->right, sum - root->val)
+
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    vector<vector<int>> total;                  //全局变量
+    vector<int> tmp;
+    void dfs(TreeNode* root, int expectNumber){
+        tmp.push_back(root->val);                              //根节点
+        if(root->val==expectNumber && !root->left && !root->right){
+            total.push_back(tmp);
+        }
+        if(root->left) dfs(root->left, expectNumber-root->val);   //左子树
+        if(root->right) dfs(root->right,expectNumber-root->val);  //右子树
+        tmp.pop_back();
+    }
+    
+    vector<vector<int>> FindPath(TreeNode* root,int expectNumber) {
+        if(!root) return total;
+        dfs(root,expectNumber);
+        return total;
+    }
+};
+
+二：非递归，用栈
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    vector<vector<int>> FindPath(TreeNode* root,int expectNumber) {
+        vector<vector<int>> total;
+        vector<int> tmp;
+        if(!root) return total;
+        stack<TreeNode*> s;      //存储节点
+        stack<vector<int>> qs;   //存储节点路径
+        s.push(root);
+        tmp.push_back(root->val);
+        qs.push(tmp);
+        while(!s.empty()){
+            TreeNode* cur = s.top();
+            s.pop();
+            vector<int> res = qs.top();
+            qs.pop();
+            if(cur->val==expectNumber && !cur->left && !cur->right){
+                total.push_back(res);
+            }
+            if(cur->right){                   //更新右子树（右路径）信息
+                vector<int> rres;
+                for(int x:res){
+                    rres.push_back(x);
+                }
+                rres.push_back(cur->right->val);
+                qs.push(rres);
+                cur->right->val += cur->val;
+                s.push(cur->right);
+            }
+            if(cur->left){                 //更新左子树（左路径）信息
+                res.push_back(cur->left->val);
+                qs.push(res);
+                cur->left->val += cur->val;
+                s.push(cur->left);
+            }
+        }
+        return total;
+    }
+};
