@@ -1,0 +1,21 @@
+【C++】
+
+一：
+class Solution {
+public:
+    vector<int> multiply(const vector<int>& A) {
+        vector<int> mul;
+        int len = A.size();
+        for(int i=0; i<len; i++){
+            int val = 1;
+            for(int j=0; j<i; j++){
+                val *= A[j];
+            }
+            for(int g=i+1; g<len; g++){
+                val *= A[g];
+            }
+            mul.push_back(val);
+        }
+        return mul;
+    }
+};
