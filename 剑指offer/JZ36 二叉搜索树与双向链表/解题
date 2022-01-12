@@ -1,0 +1,77 @@
+【C++】
+
+一：构造一个指向上一个结点的指针pre（全局变量）
+
+依旧采取中序遍历。
+根据题目的要求1，不能创建新的结点，而方法一的数组中存储的其实是结点，并不满足题意；所以需要在中序遍历的过程中，直接对结点的指针进行调整。
+调整的思路如下：
+（1）使用一个指针preNode指向当前结点root的前继。
+（2）对于当前结点root，有root->left要指向前继preNode（中序遍历时，对于当前结点root，其左孩子已经遍历完成了，此时root->left可以被修改。）；
+同时，preNode->right要指向当前结点（当前结点是preNode的后继），此时对于preNode结点，它已经完全加入双向链表。
+
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    TreeNode* pre;
+    void preorder(TreeNode* root){
+        if(!root) return;
+        preorder(root->left);
+        root->left = pre;
+        if(pre){
+            pre->right = root;
+        }
+        pre = root;
+        preorder(root->right);
+    }
+    
+    TreeNode* Convert(TreeNode* pRootOfTree) {
+        if(!pRootOfTree) return pRootOfTree;
+        TreeNode* p = pRootOfTree;
+        while(p->left) p = p->left;
+        preorder(pRootOfTree);
+        return p;
+    }
+};
+
+二：建立数组（与题意不符——不能建立新的结点）
+已知将二叉搜索树进行中序遍历可以得到由小到大的顺序排列，因此本题最直接的想法就是进行中序遍历。
+将中序遍历的结果用数组存储下来，得到的数组是有从小到大顺序的。最后将数组中的结点依次连接即可.
+
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    vector<TreeNode*> list;
+    void preorder(TreeNode* root){
+        if(!root) return;
+        preorder(root->left);
+        list.push_back(root);
+        preorder(root->right);
+    }
+    
+    TreeNode* Convert(TreeNode* pRootOfTree) {
+        if(!pRootOfTree) return pRootOfTree;
+        preorder(pRootOfTree);
+        int len = list.size();
+        for(int i=0; i<len-1; i++){
+            list[i+1]->left = list[i];
+            list[i]->right = list[i+1];
+        }
+        return list[0];
+    }
+};
