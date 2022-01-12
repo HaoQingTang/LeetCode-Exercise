@@ -1,0 +1,49 @@
+【C++】
+
+一：自顶向下
+先序遍历：根节点，左子树，右子树
+判断一个数是否为平衡二叉树。平衡二叉树是左子树的高度与右子树的高度差的绝对值小于等于1，同样左子树是平衡二叉树，右子树为平衡二叉树。
+根据定义，如果我们能够求出以每个结点为根的树的高度，然后再根据左右子树高度差绝对值小于等于1，,就可以判断以每个结点为根的树是否满足定义。
+
+class Solution {
+public:
+    unordered_map<TreeNode*, int> map;
+    int depth(TreeNode* pRoot){                    //计算以每个结点为根的树的深度
+        if(!pRoot) return 0;
+        if(map.find(pRoot)!=map.end()) return map[pRoot];
+        int lval = depth(pRoot->left);
+        int rval = depth(pRoot->right);
+        return map[pRoot]=max(lval,rval)+1;
+    }
+    bool judge(TreeNode* pRoot){                   //判断该以每个结点为跟的树是否平衡
+        if(!pRoot) return true;
+        return (abs(map[pRoot->left]-map[pRoot->right])<=1) && judge(pRoot->left) && judge(pRoot->right);
+    }
+    
+    bool IsBalanced_Solution(TreeNode* pRoot) {
+        depth(pRoot);
+        return judge(pRoot);
+    }
+};
+
+二：自底向上
+利用后序遍历：左子树、右子树、根节点,可以先递归到叶子节点，然后在回溯的过程中来判断是否满足条件。
+如果不满足平衡二叉树的定义，depth函数则返回-1，并且如果左子树不满足条件了，直接返回-1，右子树也是如此，相当于剪枝，加速结束递归。
+
+class Solution {
+public:
+    int depth(TreeNode* pRoot){                    //计算以每个结点为根的树的深度
+        if(!pRoot) return 0;
+        int lval = depth(pRoot->left);
+        if(lval==-1) return -1;                   //不符合直接返回，剪枝
+        int rval = depth(pRoot->right);
+        if(rval==-1) return -1;
+        if(abs(lval-rval)>1) return -1;
+        return max(lval,rval)+1;
+    }
+    
+    bool IsBalanced_Solution(TreeNode* pRoot) {
+        if(depth(pRoot)==-1) return false;
+        else return true;
+    }
+};
