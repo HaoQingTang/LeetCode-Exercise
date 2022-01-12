@@ -1,0 +1,39 @@
+【C++】
+
+一：递归
+若二叉树满足对称，必须满足：
+1. L->val == R->val
+2. L->left->val == R->right->val
+3. L->right->val == R->left->val
+
+因此可以自顶向下，递归求解即可。
+（1）设置一个递归函数isSame(r1, r2),表示如果对称，返回true，否则返回false
+（2）递归终止条件：r1==nullptr && r2==nulllptr, 直接返回true，否则，如果只有一个为nullptr，返回false
+（3）下一步递归：如果r1->val == r2->val, 则isSame(root1->left, root2->right) && isSame(root1->right, root2->left);
+
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    bool isSame(TreeNode* r1, TreeNode* r2){
+        if(!r1 && !r2) return true;
+        if(!r1 || !r2) return false;
+        if(r1->val == r2->val){
+            return isSame(r1->left, r2->right) && isSame(r1->right, r2->left);
+        }
+        return false;
+    }
+    
+    bool isSymmetrical(TreeNode* pRoot) {
+        return isSame(pRoot, pRoot);
+    }
+
+};
