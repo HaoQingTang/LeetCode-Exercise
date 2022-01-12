@@ -1,0 +1,48 @@
+【C++】
+
+一：暴力
+class Solution {
+public:
+    int GetNumberOfK(vector<int> data ,int k) {
+        unordered_map<int, int> map;
+        for(int x:data){
+            map[x]++;
+        }
+        return map[k];
+    }
+};
+
+二：二分法
+（左边界）下界定义为：如果存在目标值，则指向第一个目标值，否则，如果不存在， 则指向大于目标值的第一个值。
+（右边界）上界定义为：不管目标值存在与否，都指向大于目标值的第一个值。
+步骤：
+（1）先定位到左边界
+（2）接着定位右边界
+（3）判断左边界是否符合规范，若超出数组范围，则证明目标值出现的次数为0
+（4）否则，右边界减去左边界即能统计出目标出现的次数
+
+class Solution {
+public:
+    int GetNumberOfK(vector<int> data ,int k) {
+        int lbound = 0, rbound = 0;
+        int l = 0, r = data.size();
+        //左边界
+        while(l<r){
+            int mid = l + (r-l)/2;
+            if(data[mid]<k){
+                l = mid+1;
+            }
+            else r = mid;
+        }
+        lbound = l;
+        //右边界
+        l = 0, r = data.size();
+        while(l<r){
+            int mid = l + (r-l)/2;
+            if(data[mid]<=k) l = mid+1;
+            else r = mid;
+        }
+        rbound = l;
+        return rbound-lbound;
+    }
+};
