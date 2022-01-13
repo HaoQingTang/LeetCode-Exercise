@@ -1,0 +1,70 @@
+【C++】
+
+一：非递归 bfs
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+        vector<vector<int> > Print(TreeNode* pRoot) {
+            vector<vector<int>> total;
+            if(!pRoot) return total;
+            queue<TreeNode*> q;
+            q.push(pRoot);
+            while(!q.empty()){
+                vector<int> piece;
+                int len = q.size();
+                while(len--){
+                    TreeNode* root = q.front();
+                    q.pop();
+                    piece.push_back(root->val);
+                    if(root->left) q.push(root->left);
+                    if(root->right) q.push(root->right);
+                }
+                total.push_back(piece);
+            }
+            return total;
+        }
+};
+
+二：递归
+递归方法通过定义递归函数helper，遍历树的每一层，并将结果放入结果数组res的相应位置，因此需要定义level变量以记录当前访问到的层数。
+在完成对某一凑层的遍历时，按照相同方式递归地访问左孩子和右孩子，且层数加1。
+
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+        void helper(vector<vector<int>> &total, int level, TreeNode* pRoot){
+            if(!pRoot) return;
+            if(total.size()==level){
+                vector<int> piece;
+                total.push_back(piece);
+            }
+            total[level].push_back(pRoot->val);
+            helper(total, level+1, pRoot->left);
+            helper(total, level+1, pRoot->right);
+        }
+    
+        vector<vector<int> > Print(TreeNode* pRoot) {
+            vector<vector<int>> total;
+            if(!pRoot) return total;
+            helper(total, 0, pRoot);
+            return total;
+        }
+};
