@@ -1,0 +1,64 @@
+【C++】
+
+一：递归 dfs
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @param sum int整型 
+     * @return int整型
+     */
+    int val = 0;
+    void search(TreeNode* root,int sum){
+        //if(!root) return;
+        sum -= root->val;
+        if(sum==0) val += 1;
+        if(root->left) search(root->left,sum);
+        if(root->right) search(root->right,sum);
+    }
+    
+    int FindPath(TreeNode* root, int sum) {
+        if(!root) return val;
+        search(root, sum);
+        FindPath(root->left, sum);
+        FindPath(root->right, sum);
+        return val;
+    }
+};
+
+二：dfs+哈希表
+两次dfs有些浪费，可以一次dfs解决。在进入以某个结点为根的子树中，向其中添加到该节点为止的路径和进入哈希表中，相当于每次分枝下都有前面各种路径和，
+相当于我只要查找哈希表就可以找到从中间截断的路径，而遍历完这个分枝后依次删除这个分枝在哈希表中记录的路径和，避免影响别的分枝，只有公共分枝的路径和才会一直记录在哈希表中。
+
+class Solution {
+public:
+    unordered_map<int, int> mp; //记录路径和及条数
+    int dfs(TreeNode* root, int sum, int last){ //last为到上一层为止的累加和
+        if(root == NULL) //空结点直接返回
+            return 0;
+        int res = 0;
+        int temp = root->val + last; //到目前结点为止的累加和
+        if(mp.find(temp - sum) != mp.end())  //如果该累加和减去sum在哈希表中出现过，相当于减去前面的分支
+            res += mp[temp - sum]; //加上有的路径数
+        mp[temp]++; //增加该次路径和
+        res += dfs(root->left, sum, temp); //进入子结点
+        res += dfs(root->right, sum, temp); 
+        mp[temp]--; //回退该路径和，因为别的树枝不需要这边存的路径和
+        return res;
+    }
+    int FindPath(TreeNode* root, int sum) { 
+        mp[0] = 1; //路径和为0的有1条
+        return dfs(root, sum, 0);
+    }
+};
