@@ -1,0 +1,99 @@
+【C++】
+
+一：递归
+分析可知，对于节点 o1, o2 的最近公共祖先，只存在三种情况：
+（1）o1 ，o2 分别位于root的左右子树上
+（2）o1 = root, 且 o2 位于root的左子树/右子树中
+（3）o2 = root, 且 o1 位于root的左子树/右子树中
+
+递归情况：
+1.当到达空节点（既叶子节点的子节点）时，直接返回空
+2.当root等于 o1 或 o2 时，返回root
+3.若不为2， 3中情况，说明需要继续处理：
+对左子树进行递归，返回值记为 t1
+对右子树进行递归，返回值记位 t2
+t1 ，t2 存在以下几种情况：
+①. 当t1, t2都为空时，说明root的左右子树中都不存在o1, o2， 返回空
+②. 当t1为空且t2不为空时，说明左子树找不到 o1, o2,所以返回 t2
+③. 当t2为空且t1不为空时，说明右子树找不到 o1, o2,所以返回 t1
+④. 当t1, t2都不为空时,说明o1, o2分别位于root的左右子树中，既root为答案，返回root
+
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ * };
+ */
+
+class Solution {
+public:
+    /**
+     * 
+     * @param root TreeNode类 
+     * @param o1 int整型 
+     * @param o2 int整型 
+     * @return int整型
+     */
+    TreeNode* dfs(TreeNode* root, int o1, int o2){
+        if(!root) return nullptr;
+        if(root->val==o1 || root->val==o2) return root;
+        TreeNode* left = dfs(root->left, o1, o2);
+        TreeNode* right = dfs(root->right, o1, o2);
+        if(!left) return right;
+        if(!right) return left;
+        return root;
+    }
+    
+    int lowestCommonAncestor(TreeNode* root, int o1, int o2) {
+        TreeNode* result = dfs(root, o1, o2);
+        return result->val;
+    }
+};
+
+二：非递归
+对root进行两次深度搜索，分别找到到达 o1 和 o2 的路径，两条路径的最后一个公共节点即为最近公共祖先
+
+ /**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ * };
+ */
+
+class Solution {
+public:
+    /**
+     * 
+     * @param root TreeNode类 
+     * @param o1 int整型 
+     * @param o2 int整型 
+     * @return int整型
+     */
+    bool flag = false;
+    void dfs(vector<int> &val, TreeNode* root, int o){
+        if(flag || !root) return;
+        val.push_back(root->val);
+        if(root->val==o){
+            flag=true;
+            return;
+        }
+        dfs(val, root->left, o);
+        dfs(val, root->right, o);
+        if(flag) return;             //防止将节点去除
+        val.pop_back();              //不在这条路径，去除节点
+    }
+    
+    int lowestCommonAncestor(TreeNode* root, int o1, int o2) {
+        vector<int> val1, val2;
+        dfs(val1, root, o1);  //找到 root到o1路径
+        flag = false;
+        dfs(val2, root, o2);  //找到 root到o2路径
+        int len = min(val1.size(), val2.size());
+        for(int i=1; i<len; i++){  //寻找最后一个相等节点
+            if(val1[i]!=val2[i]) return val1[i-1];
+        }
+        return val1[len-1];
+    }
+};
