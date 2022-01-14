@@ -1,0 +1,60 @@
+【C++】
+
+一：辅助栈
+用栈记录每个非空格的字符，当i-1为空格时，出栈
+
+class Solution {
+public:
+    string ReverseSentence(string str) {
+        int len = str.size();
+        if(len==0) return str;
+        int i = len-1;
+        stack<char> stk;
+        string result = "";
+        while(i>=0){
+            if(str[i]==' ') result = result + ' ';
+            else stk.push(str[i]);
+            if(i==0 || str[i-1]==' '){
+                while(!stk.empty()){
+                    result = result+stk.top();
+                    stk.pop();
+                }
+            }
+            i--;
+        }
+        return result;
+    }
+};
+
+二：双指针
+解题思路： 利用两个指针标识一个单词。
+主要思路：
+（1）从尾往头遍历 使用left表示一个单词的起始位置，right表示一个单词的终止位置。
+（2）当遇到空格left与right同时向前移动，当遇到字符只有left向前移动，截取[left+1,right] 子串。
+（3）拼接截取下的字符串。
+
+class Solution {
+public:
+    string ReverseSentence(string str) {
+        int len = str.size();
+        if(len==0) return str;
+        int left = len-1;
+        int right = len-1;
+        string result = "";
+        while(left>=0){
+            while(str[left]==' '){
+                left--;
+                right--;
+                if(left<0) break;
+            }
+            if(left<0) break;
+            while(str[left]!=' '){
+                left--;
+                if(left<0) break;
+            }
+            result = result+str.substr(left+1, right-left) + " ";
+            right = left;
+        }
+        return result.substr(0,result.size()-1);        //结果后面会多一个空格
+    }
+};
