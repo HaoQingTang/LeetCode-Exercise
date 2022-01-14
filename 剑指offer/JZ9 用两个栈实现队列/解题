@@ -1,0 +1,36 @@
+【C++】
+栈：先进后出，队列：先进先出
+
+一：模拟
+push操作就直接往stack1中push。
+pop操作需要分类一下：如果stack2为空，那么需要将stack1中的数据转移到stack2中，然后在对stack2进行pop，如果stack2不为空，直接pop就ok。
+
+class Solution
+{
+public:
+    void push(int node) {
+        stack1.push(node);
+    }
+
+    int pop() {
+        int val = 0;
+        if(!stack2.empty()){
+            val = stack2.top();
+            stack2.pop();
+        }
+        else{
+            while(!stack1.empty()){
+                int num = stack1.top();
+                stack1.pop();
+                stack2.push(num);
+            }
+            val = stack2.top();
+            stack2.pop();
+        }
+        return val;
+    }
+
+private:
+    stack<int> stack1;
+    stack<int> stack2;
+};
