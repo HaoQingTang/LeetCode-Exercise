@@ -1,0 +1,35 @@
+【C++】
+
+一：辅助栈
+一个正常栈normal,用于栈的正常操作，然后需要一个辅助栈minval，专门用于获取最小值。
+push操作：normal进栈，当minval为空，minval直接进栈，当minval不为空，若value比minval的栈顶元素小直接进栈，若比minval的栈顶元素大，minval的栈顶元素进栈。
+pop操作对应弹出normal和minval的栈顶元素。
+top操作就返回normal的栈顶。
+min操作就返回minval的栈顶。
+
+class Solution {
+public:
+    stack<int> normal;
+    stack<int> minval;
+    
+    void push(int value) {
+        normal.push(value);
+        if(minval.empty()) minval.push(value);
+        else{
+            if(value<=minval.top()) minval.push(value);
+            else minval.push(minval.top());
+        }
+    }
+    void pop() {
+        normal.pop();
+        minval.pop();
+    }
+    int top() {
+        int val = normal.top();
+        return val;
+    }
+    int min() {
+        int val = minval.top();
+        return val;
+    }
+};
