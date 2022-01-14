@@ -1,0 +1,33 @@
+【C++】
+
+一：模拟
+因为弹出之前的值都会先入栈，所以这里用个栈来辅助。
+
+（1）初始化：用指针i指向pushV的第一个位置， 指针j指向popV的第一个位置
+（2）如果pushV[i] != popV[j]， 那么应该将pushV[i]放入栈中， ++i
+（3）否则，pushV[i]==popV[j], 说明这个元素是放入栈中立马弹出，所以，++i, ++j，然后应该检查popV[j]与栈顶元素是否相等，如果相等，++j, 并且弹出栈顶元素
+（4）重复2，3， 如果i==pushV.size(), 说明入栈序列访问完，此时检查栈是否为空，如果为空，说明匹配，斗则不匹配。
+
+class Solution {
+public:
+    bool IsPopOrder(vector<int> pushV,vector<int> popV) {
+        int lenpush = pushV.size();
+        stack<int> stk;
+        int i=0, j=0;
+        while(i<lenpush){
+            if(pushV[i]!=popV[j]){              //入栈队列与出栈不相等，代表当前元素只入栈不出栈
+                stk.push(pushV[i]);
+                i++;
+            }
+            else{                              //当前元素入栈后马上出栈
+                i++;
+                j++;
+                while(!stk.empty() && popV[j]==stk.top()){   //判断已入栈的元素中是否是继续出栈的
+                    stk.pop();
+                    j++;
+                }
+            }
+        }
+        return stk.empty();
+    }
+};
