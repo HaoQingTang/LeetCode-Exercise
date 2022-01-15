@@ -33,3 +33,6 @@ public:
         return vector<string>({set.begin(),set.end()});
     }
 };
+
+时间复杂度：O(n!),比如3个字符的全排列有6种
+空间复杂度：O(1),原地交换
