@@ -1,0 +1,35 @@
+【C++】
+
+一：递归
+（1）递归函数的功能：dfs(int pos, string s), 表示固定字符串s的pos下标的字符s[pos]
+（2）递归终止条件：当pos+1 == s.length()的时候，终止，表示对最后一个字符进行固定，也就说明，完成了一次全排列
+（3）下一次递归：dfs(pos+1, s), 很显然，下一次递归就是对字符串的下一个下标进行固定
+
+由于生成的字符串可以存在重复，因此运用set来存储
+
+class Solution {
+public:
+    void perm(unordered_set<string> &set, int pos, string str){
+        if(pos==str.size()-1){
+            set.insert(str);
+            return;
+        }
+        // for循环和swap的含义：对于“ABC”，
+        // 第一次'A' 与 'A'交换，字符串为"ABC", pos为0， 相当于固定'A'
+        // 第二次'A' 与 'B'交换，字符串为"BAC", pos为0， 相当于固定'B'
+        // 第三次'A' 与 'C'交换，字符串为"CBA", pos为0， 相当于固定'C'
+        for(int i=pos; i<str.size(); i++){
+            swap(str[pos], str[i]);
+            perm(set, pos+1, str);                //递归下一个字符
+            swap(str[pos], str[i]);               //回溯，变回原字符串
+        }
+    }
+    
+    vector<string> Permutation(string str) {
+        int len = str.size();
+        if(len==0) return {};
+        unordered_set<string> set;
+        perm(set, 0, str);
+        return vector<string>({set.begin(),set.end()});
+    }
+};
