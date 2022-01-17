@@ -1,0 +1,84 @@
+【C++】
+
+一：动态规划
+可以用dp数组表示以下标i为终点的最大连续子数组和，则每次遇到一个新的数组元素，连续的子数组要么加上变得更大，要么它本身就更大，
+因此状态转移为dp[i] = max(dp[i - 1] + array[i], array[i])，这是最基本的求连续子数组的最大和。
+
+但是题目要求需要返回长度最长的一个，我们则每次用left、right记录该子数组的起始，需要更新最大值的时候（要么子数组和更大，要么子数组和相等的情况下区间要更长）顺便更新最终的区间首尾，
+最后根据区间首尾获取子数组。
+
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param array int整型vector 
+     * @return int整型vector
+     */
+    vector<int> FindGreatestSumOfSubArray(vector<int>& array) {
+        int left = 0, right = 0;
+        int retl = 0, retr = 0;                  //记录最长的区间
+        vector<int> dp(array.size(),0);
+        dp[0] = array[0];
+        int ret = array[0];
+        for(int i=1; i<array.size(); i++){
+            ++right;
+            dp[i] = max(dp[i-1]+array[i], array[i]);      //状态转移
+            if(dp[i-1]+array[i]<array[i]) left = right;   //更新区间端点
+            if(dp[i]>ret || (dp[i]==ret&&(right-left+1)>(retr-retl+1))){       //更新最长的区间端点
+                ret = dp[i];
+                retl = left;
+                retr = right;
+            }
+        }
+        vector<int> result;
+        for(int i=retl; i<=retr; i++){
+            result.push_back(array[i]);
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n)，两次遍历，最坏情况下遍历两次数组
+空间复杂度：O(n)，动态规划辅助数组长度为n
+
+二：优化
+注意到动态规划在状态转移的时候只用到了i−1的信息，因此我们可以使用两个变量迭代来代替数组，状态转移的时候更新变量y，该轮循环结束的再更新x为y即可做到每次迭代都是上一轮的dp。
+
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param array int整型vector 
+     * @return int整型vector
+     */
+    vector<int> FindGreatestSumOfSubArray(vector<int>& array) {
+        int left = 0, right = 0;
+        int retl = 0, retr = 0;                  //记录最长的区间
+        int x = array[0];
+        int ret = array[0];
+        int y = 0;       //记录每一轮状态
+        for(int i=1; i<array.size(); i++){
+            right++;
+            y = max(x+array[i], array[i]);      //状态转移
+            if(x+array[i]<array[i]) left = right;   //更新区间端点
+            if(y>ret || (y==ret&&(right-left+1)>(retr-retl+1))){       //更新最长的区间端点
+                ret = y;
+                retl = left;
+                retr = right;
+            }
+            x = y;
+        }
+        vector<int> result;
+        for(int i=retl; i<=retr; i++){
+            result.push_back(array[i]);
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n)，两次遍历，最坏情况下遍历两次数组
+空间复杂度：O(1)，常数级变量，无额外空间
