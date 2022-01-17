@@ -1,0 +1,42 @@
+【C++】
+
+一：动态规划
+class Solution {
+public:
+    int jumpFloor(int number) {
+        vector<int> dp(number+1, 0);
+        dp[0] = 0;
+        dp[1] = 1;
+        dp[2] = 2;
+        for(int i=3; i<=number; i++){
+            dp[i] = dp[i-1]+dp[i-2];
+        }
+        return dp[number];
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：优化
+class Solution {
+public:
+    int jumpFloor(int number) {
+        int x = 1, y = 2;
+        int result = 0;
+        if(number == 0) return 0;
+        else if(number == 1) return 1;
+        else if(number == 2) return 2;
+        else{
+            for(int i=3;i<=number; i++){
+                result = x+y;
+                x = y;
+                y = result;
+            }
+            return result;
+        }
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
