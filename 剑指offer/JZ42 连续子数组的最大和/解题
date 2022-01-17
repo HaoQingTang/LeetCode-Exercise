@@ -1,0 +1,46 @@
+【C++】
+
+一：动态规划
+状态定义：dp[i]表示以i结尾的连续子数组的最大和。所以最终要求dp[n-1] 状态转移方程：dp[i] = max(array[i], dp[i-1]+array[i]) 
+解释：如果当前元素为整数，并且dp[i-1]为负数，那么当然结果就是只选当前元素 
+技巧：这里为了统一代码的书写，定义dp[i]表示前i个元素的连续子数组的最大和，结尾元素为array[i-1]
+
+class Solution {
+public:
+    int FindGreatestSumOfSubArray(vector<int> array) {
+        vector<int> dp(array.size()+1,1);
+        dp[0] = 0;
+        int ret = array[0];
+        for(int i=1; i<=array.size(); i++){
+            dp[i] = max(dp[i-1]+array[i-1], array[i-1]);
+            ret = max(ret, dp[i]);
+        }
+        return ret;
+    }
+};
+
+时间复杂度：O(n) 空间复杂度：O(n)
+
+二：优化
+思想很简单，就是对下标为i的元素array[i]，先试探的加上array[i], 如果和为负数，显然，以i结尾的元素对整个结果不作贡献。 
+具体过程：
+（1）初始化：维护一个变量tmp = 0
+（2）如果tmp+array[i] < 0, 说明以i结尾的不作贡献，重新赋值tmp = 0
+（3）否则更新tmp = tmp + array[i] 最后判断ret是否等于0， 如果等于0， 说明数组都是负数，选取一个最大值为答案。
+
+class Solution {
+public:
+    int FindGreatestSumOfSubArray(vector<int> array) {
+        int tmp = 0;
+        int ret = 0;
+        for(int x:array){
+            if(tmp+x<0) tmp=0;
+            else tmp += x;
+            ret = max(ret, tmp);
+        }
+        if(ret != 0) return ret;
+        else return *max_element(array.begin(), array.end());
+    }
+};
+
+时间复杂度：O(n) 空间复杂度：O(1)
