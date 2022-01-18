@@ -1,0 +1,19 @@
+【C++】
+
+一：暴力
+class Solution {
+public:
+    int InversePairs(vector<int> data) {
+        int sum = 0;
+        for(int i=0; i<data.size()-1; i++){
+            int num = 0;
+            for(int j=i+1;j<data.size(); j++){
+                if(data[i]>data[j]) num++;
+            }
+            sum += num;
+        }
+        return sum%1000000007;
+    }
+};
+
+二：归并排序
