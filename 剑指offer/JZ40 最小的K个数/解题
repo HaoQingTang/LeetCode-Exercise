@@ -1,0 +1,44 @@
+【C++】
+一：排序
+class Solution {
+public:
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+        vector<int> result;
+        if(k==0||k>input.size()) return result;
+        sort(input.begin(),input.end());
+        for(int i=0; i<k; i++) result.push_back(input[i]);
+        return result;
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(1)
+
+二：堆排序
+建立一个容量为k的大根堆的优先队列。遍历一遍元素，如果队列大小<k,就直接入队，否则，让当前元素与队顶元素相比，如果队顶元素大，则出队，将当前元素入队
+
+class Solution {
+public:
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+        vector<int> result;
+        if(k==0||k>input.size()) return result;
+        priority_queue<int,vector<int>> pq;
+        for(int x:input){
+            if(k>pq.size()) pq.push(x);
+            else{
+                if(x<pq.top()){
+                    pq.pop();
+                    pq.push(x);
+                }
+            }
+        }
+        while(!pq.empty()){
+            result.push_back(pq.top());
+            pq.pop();
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(nlogk), 插入容量为k的大根堆时间复杂度为O(logk), 一共遍历n个元素
+空间复杂度：O(k)
