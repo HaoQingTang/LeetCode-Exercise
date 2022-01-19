@@ -1,0 +1,52 @@
+【C++】
+
+一：模拟
+由于输入的两个链表都是逆序存储数字的位数的，因此两个链表中同一位置的数字可以直接相加。
+我们同时遍历两个链表，逐位计算它们的和，并与当前位置的进位值相加。
+具体而言，如果当前两个链表处相应位置的数字为n1,n2，进位值为carry，则它们的和为n1+n2+carry；
+其中，答案链表处相应位置的数字为(n1+n2+carry)mod10，而新的进位值为(n1+n2+carry)/10。
+
+如果两个链表的长度不同，则可以认为长度短的链表的后面有若干个0 。
+
+此外，如果链表遍历结束后，有carry>0，还需要在答案链表的后面附加一个节点，节点的值为carry。
+
+小技巧：对于链表问题，返回结果为头结点时，通常需要先初始化一个预先指针head，该指针的下一个节点指向真正的头结点tail。
+使用预先指针的目的在于链表初始化时无可用节点值，而且链表构造过程需要指针移动，进而会导致头指针丢失，无法返回结果。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode *head = nullptr, *tail = nullptr;
+        int numShi = 0;
+        while(l1 || l2){
+            int n1 = l1?l1->val:0;
+            int n2 = l2?l2->val:0;
+            int val = n1 + n2 + numShi;
+            if(!head){
+                head = tail = new ListNode(val%10);
+            }
+            else{
+                tail->next = new ListNode(val%10);
+                tail = tail->next;
+            }
+            numShi = val/10;
+            if(l1) l1 = l1->next;
+            if(l2) l2 = l2->next;
+        }
+        if(numShi>0) tail->next = new ListNode(numShi);
+        return head;
+    }
+};
+
+时间复杂度：O(max(m,n))，其中m和n分别为两个链表的长度。我们要遍历两个链表的全部位置，而处理每个位置只需要O(1) 的时间。
+空间复杂度：O(1)。注意返回值不计入空间复杂度
