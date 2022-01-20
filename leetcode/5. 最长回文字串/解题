@@ -1,0 +1,105 @@
+【C++】
+
+一：动态规划
+对于一个子串而言，如果它是回文串，并且长度大于2，那么将它首尾的两个字母去除之后，它仍然是个回文串。
+例如对于字符串“ababa”，如果我们已经知道“bab” 是回文串，那么“ababa” 一定是回文串，这是因为它的首尾两个字母都是“a”。
+
+根据这样的思路，我们就可以用动态规划的方法解决本题。我们用P(i,j) 表示字符串s的第i到j个字母组成的串（下文表示成s[i:j]）是否为回文串：
+P(i,j) = true， 如果S[i]...S[j]是回文串；P(i,j) = false，其他情况
+
+这里的「其它情况」包含两种可能性：
+s[i,j] 本身不是一个回文串；
+i>j，此时s[i,j] 本身不合法。
+
+那么我们就可以写出动态规划的状态转移方程：
+P(i, j) = P(i+1, j-1)^(S[i] == S[j])
+
+也就是说，只有s[i+1:j−1]是回文串，并且s的第i和j个字母相同时，s[i:j]才会是回文串。
+
+上文的所有讨论是建立在子串长度大于2的前提之上的，我们还需要考虑动态规划中的边界条件，即子串的长度为1或2。
+对于长度为1的子串，它显然是个回文串；对于长度为2的子串，只要它的两个字母相同，它就是一个回文串。因此我们就可以写出动态规划的边界条件：
+P(i, i) = true 
+P(i, i+1) = ( S[i] == S[i+1] )
+
+根据这个思路，我们就可以完成动态规划了，最终的答案即为所有P(i,j)=true 中j−i+1（即子串长度）的最大值。
+注意：在状态转移方程中，我们是从长度较短的字符串向长度较长的字符串进行转移的，因此一定要注意动态规划的循环顺序。
+
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int len = s.size();
+        if(len<2) return s;
+        vector<vector<int>> dp(len,vector<int>(len));
+        int start=0;             //记录字串开始的位置
+        int length=1;            //记录字串的长度
+        //初始化
+        for(int i=0; i<len; i++){
+            dp[i][i] = true;
+        }
+        //递归字串长度 j-i+1=L
+        for(int L=2; L<=len; L++){
+            //递归字串开始的位置
+            for(int i=0; i<len; i++){
+                int j = L+i-1;
+                if(j>=len) break;
+                if(s[i]!=s[j]) dp[i][j] = false;
+                else{
+                    if(j-i<3) dp[i][j] = true;
+                    else dp[i][j] = dp[i+1][j-1];
+                }
+                if(dp[i][j] && j-i+1>length){
+                    length = j-i+1;
+                    start = i;
+                }
+            }
+        }
+        return s.substr(start,length);
+    }
+};
+
+时间复杂度：O(n^2)，其中n是字符串的长度。动态规划的状态总数为 O(n^2)，对于每个状态，我们需要转移的时间为O(1)。
+空间复杂度：O(n^2)，即存储动态规划状态需要的空间。
+
+二：从中心扩展
+从方法一的状态转移公式中找出其中的状态转移链：
+P(i,j)←P(i+1,j−1)←P(i+2,j−2)←⋯←某一边界情况
+
+可以发现，所有的状态在转移的时候的可能性都是唯一的。也就是说，我们可以从每一种边界情况开始「扩展」，也可以得出所有的状态对应的答案。
+边界情况即为子串长度为1或2的情况。我们枚举每一种边界情况，并从对应的子串开始不断地向两边扩展。
+如果两边的字母相同，我们就可以继续扩展，例如从P(i+1,j−1) 扩展到P(i,j)；如果两边的字母不同，我们就可以停止扩展，因为在这之后的子串都不能是回文串了。
+
+「边界情况」对应的子串实际上就是我们「扩展」出的回文串的「回文中心」。
+方法二的本质即为：我们枚举所有的「回文中心」并尝试「扩展」，直到无法扩展为止，此时的回文串长度即为此「回文中心」下的最长回文串长度。我们对所有的长度求出最大值，即可得到最终的答案。
+
+class Solution {
+public:
+    pair<int,int> search(string s, int left, int right){
+        while(left>=0 && right<s.size() && s[left]==s[right]){  //向两边扩展
+            left--;
+            right++;
+        }
+        return {left+1,right-1};
+    }
+
+    string longestPalindrome(string s) {
+        int len = s.size();
+        if(len<2) return s;
+        int start = 0, end = 0;
+        for(int i=0; i<len-1; i++){
+            auto [left1, right1] = search(s, i, i);
+            auto [left2, right2] = search(s, i, i+1);
+            if(right1-left1 > end-start){
+                start = left1;
+                end = right1;
+            }
+            if(right2-left2 > end-start){
+                start = left2;
+                end = right2;
+            }
+        }
+        return s.substr(start, end-start+1);
+    }
+};
+
+时间复杂度：O(n^2)，其中n是字符串的长度。长度为1和2的回文中心分别有n和n−1个，每个回文中心最多会向外扩展O(n) 次。
+空间复杂度：O(1)。
