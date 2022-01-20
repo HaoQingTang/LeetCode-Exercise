@@ -1,0 +1,25 @@
+【C++】
+
+一：数学推导
+记rev为翻转后的数字，为完成翻转，我们可以重复「弹出」x 的末尾数字，将其「推入」rev 的末尾，直至 x 为 0。
+判断是否越界的过程：
+https://leetcode-cn.com/problems/reverse-integer/solution/zheng-shu-fan-zhuan-by-leetcode-solution-bccn/
+
+class Solution {
+public:
+    int reverse(int x) {
+        int rev = 0;
+        while(x!=0){
+            if(rev<INT_MIN/10 || rev>INT_MAX/10){
+                return 0;
+            }
+            int digit = x%10;
+            x = x/10;
+            rev = rev*10+digit;
+        }
+        return rev;
+    }
+};
+
+时间复杂度：O(log∣x∣)。翻转的次数即 x 十进制的位数。
+空间复杂度：O(1)。
