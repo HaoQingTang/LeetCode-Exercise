@@ -1,0 +1,86 @@
+【C++】
+
+一：
+class Solution {
+public:
+    int myAtoi(string s) {
+        if(s.size()==0) return 0;
+        int sign = 1;
+        int res = 0;
+        int i = 0;
+        while(i<s.size()&&s[i]==' ') i++;    //去除空格
+        for(int j=i; j<s.size(); j++){
+            if(j==i&&s[j]=='+') sign = 1;
+            else if(j==i&&s[j]=='-') sign = 0;
+            else if(isdigit(s[j])){
+                int digit = s[j]-'0';
+                if(sign==1&&res>(INT_MAX-digit)/10) return INT_MAX;    //注意检查是否越界
+                if(sign==0&&res>(INT_MAX-digit)/10) return INT_MIN;
+                res = res*10+digit;
+            }
+            else break;    //非空格，非正号，非负号，非数字
+        }
+        if(sign==1) return res;
+        else return -res;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+二：正则表达式（自动机）
+使用自动机这个概念：
+我们的程序在每个时刻有一个状态 s，每次从序列中输入一个字符 c，并根据字符 c 转移到下一个状态 s'。这样，我们只需要建立一个覆盖所有情况的从 s 与 c 映射到 s' 的表格即可解决题目中的问题。
+用表格表示永动机：
+	         ' '	 +/-	  number	  other
+start	    start  signed	in_number	end
+signed	  end	   end	  in_number	end
+in_number	end	   end	  in_number	end
+end     	end	   end	  end	      end
+
+只需要把上面这个状态转换表抄进代码即可。
+
+另外自动机也需要记录当前已经输入的数字，只要在 s' 为 in_number 时，更新我们输入的数字，即可最终得到输入的数字。
+
+class Automaton {
+    string state = "start";
+    unordered_map<string, vector<string>> table = {
+        {"start", {"start", "signed", "in_number", "end"}},
+        {"signed", {"end", "end", "in_number", "end"}},
+        {"in_number", {"end", "end", "in_number", "end"}},
+        {"end", {"end", "end", "end", "end"}}
+    };
+
+    int get_col(char c) {
+        if (isspace(c)) return 0;
+        if (c == '+' or c == '-') return 1;
+        if (isdigit(c)) return 2;
+        return 3;
+    }
+public:
+    int sign = 1;
+    long long ans = 0;
+
+    void get(char c) {
+        state = table[state][get_col(c)];
+        if (state == "in_number") {
+            ans = ans * 10 + c - '0';
+            ans = sign == 1 ? min(ans, (long long)INT_MAX) : min(ans, -(long long)INT_MIN);
+        }
+        else if (state == "signed")
+            sign = c == '+' ? 1 : -1;
+    }
+};
+
+class Solution {
+public:
+    int myAtoi(string str) {
+        Automaton automaton;
+        for (char c : str)
+            automaton.get(c);
+        return automaton.sign * automaton.ans;
+    }
+};
+
+时间复杂度：O(n)，其中 nn 为字符串的长度。我们只需要依次处理所有的字符，处理每个字符需要的时间为O(1)。
+空间复杂度：O(1)。自动机的状态只需要常数空间存储。
