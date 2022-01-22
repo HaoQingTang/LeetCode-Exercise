@@ -1,0 +1,25 @@
+【C++】
+
+一：双指针
+由于容纳的水量是由“两个指针指向的数字中较小值∗指针之间的距离”决定的。
+如果我们移动数字较大的那个指针，那么前者「两个指针指向的数字中较小值」不会增加，后者「指针之间的距离」会减小，那么这个乘积会减小。
+因此，我们移动数字较大的那个指针是不合理的。因此，我们移动 数字较小的那个指针。
+
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int len = height.size();
+        int maxVal = 0;
+        int l = 0, r = len-1;     //左、右指针
+        while(l<r){
+            int val = min(height[l],height[r])*(r-l);
+            maxVal = max(maxVal,val);
+            if(height[l]<height[r]) l++;
+            else r--;
+        }
+        return maxVal;
+    }
+};
+
+时间复杂度：O(N)，双指针总计最多遍历整个数组一次。
+空间复杂度：O(1)，只需要额外的常数级别的空间。
