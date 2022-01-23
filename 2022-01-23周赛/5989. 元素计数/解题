@@ -1,0 +1,30 @@
+【C++】
+
+一：
+class Solution {
+public:
+    int countElements(vector<int>& nums) {
+        int len = nums.size();
+        if(len<=2) return 0;
+        sort(nums.begin(),nums.end());
+        int countMin = 1;
+        int valMin = nums[0];
+        for(int i=1; i<len;i++){
+            if(nums[i]==valMin) countMin++;
+            else break;
+        }
+        int valMax = nums[len-1];
+        int countMax = 0;
+        if(valMin!=valMax){
+            countMax = 1;
+            for(int j=len-2; j>=0; j--){
+                if(nums[j]==valMax) countMax++;
+                else break;
+            }
+        }
+        return (len-countMin-countMax);
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
