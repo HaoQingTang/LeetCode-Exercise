@@ -1,0 +1,22 @@
+【C++】
+
+一：
+class Solution {
+public:
+    vector<int> findLonely(vector<int>& nums) {
+        vector<int> result;
+        if(nums.size()<=1) return nums;
+        unordered_map<int,int> map;
+        for(int x:nums){
+            map[x]++;
+        }
+        for(int x:nums){
+            if(map[x]==1 && map[x-1]==0 && map[x+1]==0){
+                result.push_back(x);
+            }
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n)
