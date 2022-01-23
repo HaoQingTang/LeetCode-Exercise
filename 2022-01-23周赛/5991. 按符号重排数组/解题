@@ -1,0 +1,32 @@
+【C++】
+
+一：
+class Solution {
+public:
+    vector<int> rearrangeArray(vector<int>& nums) {
+        vector<int> result;
+        if(nums.size()==0) return result;
+        queue<int> qp;
+        queue<int> qn;
+        for(int x:nums){
+            if(x>0) qp.push(x);
+            else qn.push(x);
+        }
+        int flag = 0;
+        while(!qp.empty()||!qn.empty()){
+            if(flag%2==0){
+                int valP = qp.front();
+                qp.pop();
+                result.push_back(valP);
+                flag++;
+            }
+            else{
+                int valN = qn.front();
+                qn.pop();
+                result.push_back(valN);
+                flag++;
+            }
+        }
+        return result;
+    }
+};
