@@ -1,0 +1,72 @@
+【C++】
+
+一：模拟、贪心
+根据罗马数字的唯一表示法，为了表示一个给定的整数num，我们寻找不超过num的最大符号值，将num减去该符号值，然后继续寻找不超过num的最大符号值，将该符号拼接在上一个找到的符号之后，
+循环直至num为0。最后得到的字符串即为num的罗马数字表示。
+编程时，可以建立一个数值-符号对的列表valueSymbols，（用哈希表也可以），按数值从大到小排列。遍历valueSymbols中的每个数值-符号对，若当前数值value不超过num，则从num中不断减去value，直至num 小于value，
+然后遍历下一个数值-符号对。若遍历中num为0则跳出循环。
+
+const pair<string, int> change[] = {
+        {"M", 1000},
+        {"CM", 900},
+        {"D", 500},
+        {"CD", 400},
+        {"C", 100},
+        {"XC", 90},
+        {"L", 50},
+        {"XL", 40},
+        {"X", 10},
+        {"IX", 9},
+        {"V", 5},
+        {"IV", 4},
+        {"I", 1}
+    };
+
+class Solution {
+public:
+    string intToRoman(int num) {
+        string result;
+        for(auto &[roman,val]:change){
+            while(num>=val){
+                num -= val;
+                result = result+roman;
+            }
+            if(num==0){
+                break;
+            }
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(1)
+空间复杂度：O(1)
+
+二：暴力
+千位数字只能由M 表示；
+百位数字只能由C，CD，D 和CM 表示；
+十位数字只能由X，XL，L 和XC 表示；
+个位数字只能由I，IV，V 和IX 表示。
+这恰好把这13个符号分为四组，且组与组之间没有公共的符号。因此，整数num的十进制表示中的每一个数字都是可以单独处理的。
+
+而且，利用模运算和除法运算，我们可以得到num 每个位上的数字：
+thousands_digit = num / 1000
+hundreds_digit = (num % 1000) / 100
+tens_digit = (num % 100) / 10
+ones_digit = num % 10
+
+class Solution {
+public:
+    string intToRoman(int num) {
+        string result;
+        string M[] = {"","M","MM","MMM"};
+        string C[] = {"","C","CC","CCC","CD","D","DC","DCC","DCCC","CM"};
+        string X[] = {"","X","XX","XXX","XL","L","LX","LXX","LXXX","XC"};
+        string I[] = {"","I","II","III","IV","V","VI","VII","VIII","IX"};
+        result = M[num/1000]+C[(num%1000)/100]+X[(num%100)/10]+I[num%10];
+        return result;
+    }
+};
+
+时间复杂度：O(1)
+空间复杂度：O(1)
