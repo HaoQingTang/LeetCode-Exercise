@@ -1,0 +1,94 @@
+【C++】
+
+一：排序+双指针
+使用两重循环分别枚举前两个数，然后在两重循环枚举到的数之后使用双指针枚举剩下的两个数。
+假设两重循环枚举到的前两个数分别位于下标i和j，其中i<j。初始时，左右指针分别指向下标j+1和下标n−1。每次计算四个数的和，并进行如下操作：
+如果和等于target，则将枚举到的四个数加到答案中，然后将左指针右移直到遇到不同的数，将右指针左移直到遇到不同的数；
+如果和小于target，则将左指针右移一位；
+如果和大于target，则将右指针左移一位。
+
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        int len = nums.size();
+        vector<vector<int>> result;
+        if(len<4) return result;
+        sort(nums.begin(),nums.end());
+        for(int i=0; i<len-3; i++){            //固定第一个元素
+            if(i>0 && nums[i]==nums[i-1]) continue;                 //除重
+            for(int j=i+1; j<len-2;j++){       //固定第二个元素
+                if(j>i+1 && nums[j]==nums[j-1]) continue;           //除重
+                int L = j+1;                   //左指针（移动第三个元素）
+                int R = len-1;                 //右指针（移动第四个元素）
+                while(L<R){
+                    long long int sum=0LL+nums[i]+nums[j]+nums[L]+nums[R];    //注意越界问题
+                    if(sum==target){
+                        vector<int> tmp;
+                        tmp.push_back(nums[i]);
+                        tmp.push_back(nums[j]);
+                        tmp.push_back(nums[L]);
+                        tmp.push_back(nums[R]);
+                        result.push_back(tmp);
+                        while(L<R && nums[L]==nums[L+1]) L++;     //除重
+                        while(L<R && nums[R]==nums[R-1]) R--;     //除重
+                        L++;
+                        R--;
+                    }
+                    else if(sum>target) R--;
+                    else L++;
+                }
+            }
+        }
+        return result;
+    }
+};
+
+剪枝：
+在确定第一个数之后，如果nums[i]+nums[i+1]+nums[i+2]+nums[i+3]>target，说明此时剩下的三个数无论取什么值，四数之和一定大于target，因此退出第一重循环；
+在确定第一个数之后，如果nums[i]+nums[n−3]+nums[n−2]+nums[n−1]<target，说明此时剩下的三个数无论取什么值，四数之和一定小于target，因此第一重循环直接进入下一轮，枚举nums[i+1]；
+在确定前两个数之后，如果nums[i]+nums[j]+nums[j+1]+nums[j+2]>target，说明此时剩下的两个数无论取什么值，四数之和一定大于target，因此退出第二重循环；
+在确定前两个数之后，如果nums[i]+nums[j]+nums[n−2]+nums[n−1]<target，说明此时剩下的两个数无论取什么值，四数之和一定小于target，因此第二重循环直接进入下一轮，枚举nums[j+1]。
+
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        int len = nums.size();
+        vector<vector<int>> result;
+        if(len<4) return result;
+        sort(nums.begin(),nums.end());
+        for(int i=0; i<len-3; i++){            //固定第一个元素
+            if(i>0 && nums[i]==nums[i-1]) continue;                 //除重
+            if((long)nums[i]+nums[i+1]+nums[i+2]+nums[i+3]>target) break;          //剪枝
+            if((long)nums[i]+nums[len-1]+nums[len-2]+nums[len-3]<target) continue; //剪枝
+            for(int j=i+1; j<len-2;j++){       //固定第二个元素
+                if(j>i+1 && nums[j]==nums[j-1]) continue;           //除重
+                if((long)nums[i]+nums[j]+nums[j+1]+nums[j+2]>target) break;        //剪枝
+                if((long)nums[i]+nums[j]+nums[len-1]+nums[len-2]<target) continue; //剪枝
+                int L = j+1;                   //左指针（移动第三个元素）
+                int R = len-1;                 //右指针（移动第四个元素）
+                while(L<R){
+                    long long int sum=0LL+nums[i]+nums[j]+nums[L]+nums[R];    //注意越界问题
+                    if(sum==target){
+                        vector<int> tmp;
+                        tmp.push_back(nums[i]);
+                        tmp.push_back(nums[j]);
+                        tmp.push_back(nums[L]);
+                        tmp.push_back(nums[R]);
+                        result.push_back(tmp);
+                        while(L<R && nums[L]==nums[L+1]) L++;     //除重
+                        while(L<R && nums[R]==nums[R-1]) R--;     //除重
+                        L++;
+                        R--;
+                    }
+                    else if(sum>target) R--;
+                    else L++;
+                }
+            }
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n^3)，其中n是数组的长度。排序的时间复杂度是O(nlogn)，枚举四元组的时间复杂度是O(n^3)，因此总时间复杂度为 O(n^3+n\log n)=O(n^3)。
+空间复杂度：O(logn)，其中n是数组的长度。空间复杂度主要取决于排序额外使用的空间。
+此外排序修改了输入数组nums，实际情况中不一定允许，因此也可以看成使用了一个额外的数组存储了数组nums的副本并排序，空间复杂度为O(n)。
