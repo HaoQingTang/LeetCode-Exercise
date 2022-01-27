@@ -1,0 +1,88 @@
+【C++】
+
+一：直接删除
+一种容易想到的方法是，我们首先从头节点开始对链表进行一次遍历，得到链表的长度L。随后我们再从头节点开始对链表进行一次遍历，当遍历到第L−n+1 个节点时，它就是我们需要删除的节点。
+
+为了与题目中的n保持一致，节点的编号从1开始，头节点为编号1的节点。
+
+为了方便删除操作，我们可以从哑节点开始遍历L−n+1 个节点。当遍历到第L−n+1 个节点时，它的下一个节点就是我们需要删除的节点，这样我们只需要修改一次指针，就能完成删除操作。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    int getlength(ListNode* head){
+        int len = 0;
+        while(head){
+            len++;
+            head = head->next;
+        }
+        return len;
+    }
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        int len = getlength(head);
+        ListNode* dummy = new ListNode(0,head);   //哑结点，next指向head
+        ListNode* cur = dummy;
+        for(int i=1; i<len-n+1; ++i){
+            cur = cur->next;
+        }
+        cur->next = cur->next->next;             //删除结点，只修改这一次
+        ListNode* res = dummy->next;
+        delete(dummy);
+        return res;
+    }
+
+};
+
+时间复杂度：O(L)，其中L 是链表的长度。
+空间复杂度：O(1)。
+
+二：双指针
+由于我们需要找到倒数第n个节点，因此我们可以使用两个指针first和second同时对链表进行遍历，并且first比second超前n个节点。当first遍历到链表的末尾时，second就恰好处于倒数第n个节点。
+
+具体地，初始时first和second均指向头节点。我们首先使用first 对链表进行遍历，遍历的次数为n。此时，first和second之间间隔了n−1个节点，即first比second超前了n个节点。
+
+在这之后，我们同时使用first和second对链表进行遍历。当first遍历到链表的末尾（即first 为空指针）时，second恰好指向倒数第n个节点。
+
+可以考虑在初始时将second 指向哑节点，其余的操作步骤不变。这样一来，当first遍历到链表的末尾时，second的下一个节点就是我们需要删除的节点。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* fast = head;
+        ListNode* dummy = new ListNode(0,head);   //哑结点，next指向head
+        ListNode* slow = dummy;
+        while(fast&&n--){
+            fast = fast->next;
+        }
+        while(fast){
+            fast = fast->next;
+            slow = slow->next;
+        }
+        slow->next = slow->next->next;        //删除结点            
+        ListNode* res = dummy->next;
+        delete(dummy);
+        return res;
+    }
+};
+
+时间复杂度：O(L)，其中L 是链表的长度。
+空间复杂度：O(1)。
