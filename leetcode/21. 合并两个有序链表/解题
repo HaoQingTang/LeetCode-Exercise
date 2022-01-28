@@ -1,0 +1,88 @@
+【C++】
+
+一：迭代，建立新的头结点，直接比较
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        ListNode* node = new ListNode(-1);             //头结点
+        ListNode* cur = node;
+        while(list1 && list2){
+            if(list1->val<list2->val){
+                cur->next = list1;
+                list1 = list1->next;
+            }
+            else{
+                cur->next = list2;
+                list2 = list2->next;
+            }
+            cur = cur->next;
+        }
+        while(list1){
+            cur->next = list1;
+            list1 = list1->next;
+            cur = cur->next;
+        }
+        while(list2){
+            cur->next = list2;
+            list2 = list2->next;
+            cur = cur->next;
+        }
+        return node->next;
+    }
+};
+
+时间复杂度：O(n+m)，其中n和m分别为两个链表的长度。因为每次循环迭代中，l1 和 l2 只有一个元素会被放进合并链表中， 因此 while 循环的次数不会超过两个链表的长度之和。
+所有其他操作的时间复杂度都是常数级别的，因此总的时间复杂度为O(n+m)。
+空间复杂度：O(1)。我们只需要常数的空间存放若干变量。
+
+二：递归
+可以如下递归地定义两个链表里的 merge 操作（忽略边界情况，比如空链表等）： 
+list1[0]+merge(list1[1:],list2)      list1[0]<list2[0]
+list2[0]+merge(list1,list2[1:])      otherwise
+也就是说，两个链表头部值较小的一个节点与剩下元素的 merge 操作结果合并。
+
+直接将以上递归过程建模，同时需要考虑边界情况。
+
+如果 l1 或者 l2 一开始就是空链表 ，那么没有任何操作需要合并，所以我们只需要返回非空链表。
+否则，我们要判断 l1 和 l2 哪一个链表的头节点的值更小，然后递归地决定下一个添加到结果里的节点。如果两个链表有一个为空，递归结束。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        if(list1==nullptr) return list2;
+        if(list2==nullptr) return list1;
+        if(list1->val<list2->val){
+            list1->next = mergeTwoLists(list1->next,list2);
+            return list1;
+        }
+        else{
+            list2->next = mergeTwoLists(list1,list2->next);
+            return list2;
+        }
+    }
+};
+
+时间复杂度：O(n+m)，其中n和m分别为两个链表的长度。因为每次调用递归都会去掉 l1 或者 l2 的头节点（直到至少有一个链表为空），函数 mergeTwoList 至多只会递归调用每个节点一次。
+因此，时间复杂度取决于合并后的链表长度，即O(n+m)。
+空间复杂度：O(n+m)，其中n和m分别为两个链表的长度。递归调用 mergeTwoLists 函数时需要消耗栈空间，栈空间的大小取决于递归调用的深度。
+结束递归调用时 mergeTwoLists 函数最多调用n+m 次，因此空间复杂度为O(n+m)。每一次调用，空间复杂度为O(1)。
