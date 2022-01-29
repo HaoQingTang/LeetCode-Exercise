@@ -1,0 +1,76 @@
+【C++】
+
+一：二分搜索：分别找到左边的界和右边的界
+
+考虑target开始和结束位置，其实我们要找的就是数组中「第一个等于target 的位置」（记为start）和「第一个大于target 的位置减一」（记为end）。
+
+二分查找中，寻找start即为在数组中寻找第一个大于等于target 的下标，寻找end即为在数组中寻找第一个大于target的下标，然后将下标减一。
+
+最后，因为target可能不存在数组中，因此我们需要重新校验我们得到的两个下标start和end，看是否符合条件，如果符合条件就返回[start, end]，不符合就返回[−1,−1]。
+
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        vector<int> result;
+        int len = nums.size();
+        int left = 0, right = len-1;
+        int res = len;
+        while(left<=right){              //寻找左边界
+            int mid = (left+right)/2;
+            if(nums[mid]>=target){
+                right = mid-1;
+                res = mid;
+            }
+            else left = mid+1;
+        }
+        int start = res;
+        left = 0; right = len-1; res = len;
+        while(left<=right){              //寻找右边界
+            int mid = (left+right)/2;
+            if(nums[mid]>target){
+                right = mid-1;
+                res = mid;
+            }
+            else left = mid+1;
+        }
+        int end = res-1;
+        if(start<=end && end<len && nums[start]==target && nums[end]==target){
+            result.push_back(start);
+            result.push_back(end);
+            return result;
+        }
+        else{
+            result.push_back(-1);
+            result.push_back(-1);
+            return result;
+        }
+    }
+};
+
+时间复杂度：O(logn) ，其中n为数组的长度。二分查找的时间复杂度为O(logn)，一共会执行两次，因此总时间复杂度为O(logn)。
+空间复杂度：O(1) 。只需要常数空间存放若干变量。
+
+二：直接遍历
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        vector<int> result;
+        vector<int> list;
+        int len = nums.size();
+        for(int i=0; i<len; i++){
+            if(nums[i]==target) list.push_back(i);
+        }
+        if(list.size()!=0){
+            result.push_back(list[0]);
+            result.push_back(list[list.size()-1]);
+            return result;
+        }
+        else{
+            result.push_back(-1);
+            result.push_back(-1);
+            return result;
+        }
+    }
+};
+
+时间复杂度：O(n)
