@@ -1,0 +1,20 @@
+【C++】
+
+一：
+class Solution {
+public:
+    int findFinalValue(vector<int>& nums, int original) {
+        int len = nums.size();
+        int i = 0;
+        sort(nums.begin(),nums.end());
+        while(i<len){
+            if(nums[i]<original) i++;
+            else if(nums[i]==original) original *= 2;
+            else break;
+        }
+        return original;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
