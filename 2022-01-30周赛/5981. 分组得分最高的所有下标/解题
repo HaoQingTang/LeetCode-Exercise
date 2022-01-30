@@ -1,0 +1,30 @@
+【C++】
+
+一：动态规划
+class Solution {
+public:
+    vector<int> maxScoreIndices(vector<int>& nums) {
+        int len = nums.size();
+        vector<int> dp(len+1);
+        dp[0] = 0;
+        for(int i=0; i<len; i++){
+            dp[0] += nums[i];
+        }
+        int maxVal = dp[0];
+        for(int j=1; j<=len; j++){
+            if(nums[j-1]==0){
+                dp[j] = dp[j-1]+1;
+                maxVal = max(dp[j],maxVal);
+            } 
+            else dp[j] = dp[j-1]-1;
+        }
+        vector<int> result;
+        for(int i=0; i<=len; i++){
+            if(dp[i]==maxVal) result.push_back(i);
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
