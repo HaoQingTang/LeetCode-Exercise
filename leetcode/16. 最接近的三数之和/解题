@@ -1,0 +1,36 @@
+【C++】
+
+一：
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        sort(nums.begin(),nums.end());
+        int best = 1e7;
+        for(int i=0; i<nums.size()-2; i++){
+            int left = i+1;
+            int right = nums.size()-1;
+            if(i>0 && nums[i-1]==nums[i]) continue;
+            while(left<right){
+                int sum = nums[i]+nums[left]+nums[right];
+                if(sum==target) return target;
+                if(abs(sum-target)<abs(best-target)) best = sum;     //计算差值
+                if(sum>target){
+                    while(left<right && nums[right-1]==nums[right]){
+                        right--;
+                    }
+                    right--;
+                }
+                else if(sum<target){
+                    while(left<right && nums[left+1]==nums[left]){
+                        left++;
+                    }
+                    left++;
+                }
+            }
+        }
+        return best;
+    }
+};
+
+时间复杂度：O(N^2)，其中N是数组nums的长度。我们首先需要O(NlogN)的时间对数组进行排序，随后在枚举的过程中，使用一重循环O(N) 枚举a，双指针O(N)枚举b和c，故一共是O(N^2)。
+空间复杂度：O(logN)。排序需要使用O(logN) 的空间。然而我们修改了输入的数组nums，在实际情况下不一定允许，因此也可以看成使用了一个额外的数组存储了nums 的副本并进行排序，此时空间复杂度为O(N)。
