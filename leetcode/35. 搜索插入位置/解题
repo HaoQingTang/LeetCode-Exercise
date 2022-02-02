@@ -1,0 +1,25 @@
+【C++】
+
+一：二分搜索
+找到第一个大于等于target的数的位置
+
+class Solution {
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        int len = nums.size();
+        int left = 0, right = len-1;
+        int ans = len;
+        while(left<=right){
+            int mid = (left+right)/2;
+            if(nums[mid]>=target){
+                right = mid-1;
+                ans = mid;
+            }
+            else left = mid+1;
+        }
+        return ans;
+    }
+};
+
+时间复杂度：O(logn)
+空间复杂度：O(1)
