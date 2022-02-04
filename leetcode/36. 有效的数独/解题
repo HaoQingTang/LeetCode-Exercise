@@ -1,0 +1,68 @@
+【C++】
+
+一：暴力
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                if(j<8){
+                    for(int g=j+1; g<9; g++){                 //判断同行
+                        if(board[i][j]!='.' && board[i][j]==board[i][g]) return false;
+                    }
+                }
+                if(i<8){
+                    for(int h=i+1; h<9; h++){                 //判断同列
+                        if(board[i][j]!='.' && board[i][j]==board[h][j]) return false;
+                    }
+                }
+                int row = i/3;
+                int col = j/3;
+                for(int g=row*3; g<row*3+3; g++){
+                    for (int h=col*3; h<col*3+3; h++){        //判断九宫格
+                        if(g!=i && h!=j)
+                            if(board[i][j]!='.' && board[i][j]==board[g][h]) return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+};
+
+时间复杂度：O(n^2) ？？？
+空间负责度：O(1)
+
+二：一次遍历 
+用哈希表记录每行每列每个小9格中数字出现的次数，本题用数组代替哈希表
+
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        int rows[9][9];
+        int columns[9][9];
+        int subboxes[3][3][9];
+        
+        memset(rows,0,sizeof(rows));
+        memset(columns,0,sizeof(columns));
+        memset(subboxes,0,sizeof(subboxes));
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                char c = board[i][j];
+                if (c != '.') {
+                    int index = c - '0' - 1;  //数独的数字从1开始
+                    rows[i][index]++;
+                    columns[j][index]++;
+                    subboxes[i / 3][j / 3][index]++;
+                    if (rows[i][index] > 1 || columns[j][index] > 1 || subboxes[i / 3][j / 3][index] > 1) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+};
+
+时间复杂度：O(1)
+空间负责度：O(1)
