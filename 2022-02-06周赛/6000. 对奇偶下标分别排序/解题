@@ -1,0 +1,26 @@
+【C++】
+
+一：
+class Solution {
+public:
+    vector<int> sortEvenOdd(vector<int>& nums) {
+        int len = nums.size();
+        if(len==1) return nums;
+        vector<int> ji;
+        vector<int> ou;
+        for(int i=0; i<len; i++){
+            if(i%2==0) ou.push_back(nums[i]);
+            else ji.push_back(nums[i]);
+        }
+        sort(ji.begin(),ji.end());
+        sort(ou.begin(),ou.end());
+        vector<int> result;
+        for(int j=0; j<len; j++){
+            if(j%2==0) result.push_back(ou[(j/2)]);
+            else result.push_back(ji[ji.size()-1-(j/2)]);
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n)
