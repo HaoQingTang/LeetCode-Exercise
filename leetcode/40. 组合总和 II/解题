@@ -1,0 +1,40 @@
+【C++】
+
+一：dfs 回溯
+
+这道题与上一问的区别在于：
+
+第 39 题：candidates 中的数字可以无限制重复被选取；
+第 40 题：candidates 中的每个数字在每个组合中只能使用一次。
+相同点是：相同数字列表的不同排列视为一个结果。
+
+如何去掉重复的集合（重点）
+为了使得解集不包含重复的组合。有以下2种方案：
+（1）使用 哈希表 天然的去重功能，但是编码相对复杂；
+（2）这里我们使用和第 39 题和第 15 题（三数之和）类似的思路：不重复就需要按顺序搜索，在搜索的过程中检测分支是否会出现重复结果。
+注意：这里的顺序不仅仅指数组 candidates 有序，还指按照一定顺序搜索结果。
+
+class Solution {
+public:
+    void dfs(vector<int>& candidates,int target,vector<vector<int>>& result,vector<int>& tmp,int pos){
+        if(target==0){
+            result.push_back(tmp);
+            return;
+        }
+        for(int i=pos; i<candidates.size() && target-candidates[i]>=0; i++){
+            if(i>pos && candidates[i]==candidates[i-1]) continue;            //去重
+            tmp.push_back(candidates[i]);
+            dfs(candidates,target-candidates[i],result,tmp,i+1);
+            tmp.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        vector<vector<int>> result;
+        vector<int> tmp;
+        sort(candidates.begin(),candidates.end());
+        if(target<candidates[0]) return result;
+        dfs(candidates,target,result,tmp,0);
+        return result;
+    }
+};
