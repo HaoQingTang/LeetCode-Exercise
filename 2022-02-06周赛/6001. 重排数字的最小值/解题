@@ -1,0 +1,33 @@
+【C++】
+
+一：
+class Solution {
+public:
+    long long smallestNumber(long long num) {
+        if(num==0) return 0;
+        vector<int> tmp;
+        bool flag = true;
+        if(num<0) flag = false;
+        while(num!=0){
+            int val = num%10;
+            tmp.push_back(val);
+            num = num/10;
+        }
+        sort(tmp.begin(),tmp.end());
+        long long int result=0;
+        if(flag){
+            for(int j=0; j<tmp.size(); j++){
+                if(tmp[j]!=0){
+                    swap(tmp[0],tmp[j]);
+                    break;
+                }
+            }
+        }
+        for(int i=0; i<tmp.size(); i++){
+            result = result*10+tmp[i];
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n)
