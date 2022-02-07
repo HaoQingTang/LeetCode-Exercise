@@ -1,0 +1,113 @@
+【C++】
+
+一：懒惰标记
+
+所谓懒惰标记，就是动作发出时，记录下动作，而并不真正的执行，等到真正应用时再执行。
+分析 Bitset 类的操作，难点在于 void flip()，如果全部翻转，时间复杂度是O(size)，其最多可能有 10^5次，显然时间复杂度过高。
+
+为此，我们设置一个变量标志 Bitset 类，当前是否是翻转状态，只是一种标记，而不是真正的对每一个元素进行翻转，设翻转前1的数量为count1，那么翻转后1的数量为size−count1。
+
+对于Bitset(int size) 操作：
+初始化数组 bit[]，一开始所有位置都为0。
+count1，表示1的数量，初始为0。
+flips 表示当前是否处于翻转状态，初始为false。
+
+对于 void fix(int idx) 操作：
+当前不处于翻转状态，即flips=false，如果bit[idx]等于0，那么 bit[idx] = 1、count1++。
+当前处于翻转状态，即flips=true，如果bit[idx]等于1，那么 bit[idx] = 0、count1++。
+
+对于 unfix(int idx) 操作：
+当前不处于翻转状态，即flips=false，如果bit[idx]等于1，那么 bit[idx] = 0、count1--。
+当前处于翻转状态，即flips=true，如果bit[idx]等于0，那么 bit[idx] = 1、count1--。
+
+对于void flip() 操作，对翻转状态和1的数量取反 flips ^= 1、count1 = size - count1。
+
+对于void all() 操作，判断count1是否和 size相等。
+
+对于 bool one() 操作，直接返回count1是否大于0。
+
+对于 bool count() 操作，直接返回count1。
+
+对于string toString() 操作，对数组bit[]操作，根据flips当前是否处于翻转状态，对bit[]数组进行翻转，将数组拼接成字符串即可。
+如果没有翻转则直接返回s，否则翻转s的每一位并返回。（s表示没有发生翻转下的位集）
+
+const int maxsize = 1e5 + 7;
+
+class Bitset {
+public:
+    bool flips;
+    int count1, size1;
+    int bit[maxsize];
+
+    Bitset(int size) {
+        size1 = size;
+        count1 = 0;
+        for(int i=0; i<size; i++){
+            bit[i] = 0;
+        }
+        flips = false;
+    }
+    
+    void fix(int idx) {
+        if (!flips) {
+            if (bit[idx] == 0)
+                count1++;
+            bit[idx] = 1;
+        } else {
+            if (bit[idx] == 1)
+                count1++;
+            bit[idx] = 0;
+        }
+    }
+    
+    void unfix(int idx) {
+        if (!flips){
+            if(bit[idx]==1) count1--;
+            bit[idx] = 0;
+        }
+        else{
+            if(bit[idx]==0) count1--;
+            bit[idx] = 1;
+        }
+    }
+    
+    void flip() {
+        flips = !flips;
+        count1 = size1 - count1;
+    }
+    
+    bool all() {
+        return count1 == size1;
+    }
+    
+    bool one() {
+        return count1>0;
+    }
+    
+    int count() {
+        return count1;
+    }
+    
+    string toString() {
+        string str;
+        for(int i=0; i<size1; i++){
+            str += flips ? (bit[i] ^ 1 + '0') : (bit[i] + '0');
+        }
+        return str;
+    }
+};
+
+/**
+ * Your Bitset object will be instantiated and called as such:
+ * Bitset* obj = new Bitset(size);
+ * obj->fix(idx);
+ * obj->unfix(idx);
+ * obj->flip();
+ * bool param_4 = obj->all();
+ * bool param_5 = obj->one();
+ * int param_6 = obj->count();
+ * string param_7 = obj->toString();
+ */
+ 
+ 时间复杂度：O(size)
+ 空间复杂度：O(size)
