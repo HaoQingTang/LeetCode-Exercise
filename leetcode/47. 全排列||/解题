@@ -1,0 +1,54 @@
+【C++】
+
+一：回溯
+
+我们将这个问题看作有n个排列成一行的空格，我们需要从左往右依次填入题目给定的n个数，每个数只能使用一次。那么很直接的可以想到一种穷举的算法，即从左往右每一个位置都依此尝试填入一个数，
+看能不能填完这n个空格，在程序中我们可以用「回溯法」来模拟这个过程。
+
+我们定义递归函数backtrack(idx, perm)表示当前排列为perm，下一个待填入的位置是第idx个位置（下标从0开始）。那么整个递归函数分为两个情况：
+如果idx==n，说明我们已经填完了n个位置，找到了一个可行的解，我们将perm 放入答案数组中，递归结束。
+如果idx<n，我们要考虑第idx个位置填哪个数。根据题目要求我们肯定不能填已经填过的数，因此很容易想到的一个处理手段是我们定义一个标记数组vis 来标记已经填过的数，那么在填第idx 个数的时候
+我们遍历题目给定的n个数，如果这个数没有被标记过，我们就尝试填入，并将其标记，继续尝试填下一个位置，即调用函数backtrack(idx + 1, perm)。
+搜索回溯的时候要撤销该个位置填的数以及标记，并继续尝试其他没被标记过的数。
+
+但题目解到这里并没有满足「全排列不重复」的要求，在上述的递归函数中我们会生成大量重复的排列，因为对于第idx的位置，如果存在重复的数字i，我们每次会将重复的数字都重新填上去并继续尝试导
+致最后答案的重复，因此我们需要处理这个情况。
+
+要解决重复问题，我们只要设定一个规则，保证在填第idx 个数的时候重复数字只会被填入一次即可。而在本题解中，我们选择对原数组排序，保证相同的数字都相邻，然后每次填入的数一定是这个数所在
+重复数集合中「从左往右第一个未被填过的数字」。
+
+class Solution {
+    vector<int> vis;             //标记该数是否使用过
+public:
+    void dfs(vector<vector<int>>& result, vector<int>& nums, int pos, vector<int>& tmp){
+        if(pos==nums.size()){
+            result.push_back(tmp);
+            return;
+        }
+        for(int i=0; i<nums.size(); i++){
+            if(vis[i] || (i>0 && nums[i-1]==nums[i] && !vis[i-1])) continue;
+            tmp.push_back(nums[i]);
+            vis[i] = 1;
+            dfs(result, nums, pos+1, tmp);
+            tmp.pop_back();             //回溯
+            vis[i] = 0;
+        }
+    }
+
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        int len = nums.size();
+        vector<vector<int>> result;
+        if(len==1){
+            result.push_back(nums);
+            return result;
+        }
+        sort(nums.begin(),nums.end());
+        vector<int> tmp;
+        vis.resize(len);
+        dfs(result, nums, 0, tmp);
+        return result;
+    }
+};
+
+时间复杂度：O(n×n!)，其中n为序列的长度。
+空间复杂度：O(n)
