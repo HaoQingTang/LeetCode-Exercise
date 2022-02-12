@@ -1,0 +1,22 @@
+【C++】
+
+一：反向遍历
+
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        int len = s.size();
+        int i = len-1;
+        while(s[i]==' '){
+            i--;
+        }
+        int start = i;
+        while(i>=0 && s[i]!=' '){
+            i--;
+        }
+        return (start-i);
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
