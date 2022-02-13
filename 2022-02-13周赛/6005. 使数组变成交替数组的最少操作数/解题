@@ -1,0 +1,50 @@
+【C++】
+
+一：
+分开奇下标和偶下标统计
+
+class Solution {
+public:
+    int minimumOperations(vector<int>& nums) {
+        int len = nums.size();
+        if(len==1) return 0;
+        unordered_map<int, int> map1;
+        unordered_map<int, int> map2;
+        for(int i=0; i<len; i=i+2){
+            map1[nums[i]]++;
+        }
+        for(int i=1; i<len; i=i+2){
+            map2[nums[i]]++;
+        }
+        int max1 = 0, max2 = 0;
+        int maxval1 = 0, maxval2 = 0;
+        for(auto& x:map1){
+            if(x.second>=max1){    
+                max1 = x.second;
+                maxval1 = x.first;
+            }
+        }
+            
+        for(auto& x:map2){
+            if(x.second>=max2){    
+                max2 = x.second;
+                maxval2 = x.first;
+            }
+        }
+        if(maxval1 != maxval2) return(len-max1-max2);
+        else{
+            int mid1 = 0, mid2 = 0;
+            for(auto& x:map1){
+                if(x.second>=mid1 && x.second!=max1){
+                    mid1 = x.second;
+                }
+            }
+            for(auto& x:map2){
+                if(x.second>=mid2 && x.second!=max2){
+                    mid2 = x.second;
+                }
+            }
+            return (len-max(max1+mid2,max2+mid1));
+        }
+    }
+};
