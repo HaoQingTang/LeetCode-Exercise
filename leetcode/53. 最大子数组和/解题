@@ -1,0 +1,21 @@
+【C++】
+
+一：动态规划
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int len = nums.size();
+        if(len==1) return nums[0];
+        vector<int> dp(len);
+        dp[0] = nums[0];
+        int maxval = dp[0];
+        for(int i=1; i<len; i++){
+            dp[i] = max(dp[i-1]+nums[i],nums[i]);
+            maxval = max(maxval,dp[i]);
+        }
+        return maxval;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
