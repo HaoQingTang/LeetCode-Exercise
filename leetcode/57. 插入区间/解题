@@ -1,0 +1,51 @@
+【C++】
+
+一：模拟
+在给定的区间集合X互不重叠的前提下，当我们需要插入一个新的区间S=[left,right] 时，我们只需要：
+找出所有与区间S重叠的区间集合X′；
+将X′中的所有区间连带上区间S合并成一个大区间；
+最终的答案即为不与X′重叠的区间以及合并后的大区间。
+
+这样做的正确性在于，给定的区间集合中任意两个区间都是没有交集的，因此所有需要合并的区间，就是所有与区间 SS 重叠的区间。
+并且，在给定的区间集合已经按照左端点排序的前提下，所有与区间S重叠的区间在数组intervals中下标范围是连续的，因此我们可以对所有的区间进行一次遍历，就可以找到这个连续的下标范围。
+当我们遍历到区间[li, ri]时：如果ri<left，说明[li, ri]与S不重叠并且在其左侧，我们可以直接将[li, ri]加入答案；
+如果li>right，说明[li, ri]与S不重叠并且在其右侧，我们可以直接将[li, ri]加入答案；
+如果上面两种情况均不满足，说明[li, ri]与S重叠，我们无需将[li, ri]加入答案。此时，我们需要将S与[li, ri]合并，即将S更新为其与[li, ri]的并集。
+
+那么我们应当在什么时候将区间S加入答案呢？由于我们需要保证答案也是按照左端点排序的，因此当我们遇到第一个满足li>right的区间时，说明以后遍历到的区间不会与S重叠，并且它们左端点一定会大于S
+的左端点。此时我们就可以将S加入答案。特别地，如果不存在这样的区间，我们需要在遍历结束后，将S加入答案。
+
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        if(newInterval.size()==0) return intervals;
+        vector<vector<int>> result;
+        int len = intervals.size();
+        if(len==0){
+            result.push_back(newInterval);
+            return result;
+        }
+        int L = newInterval[0];
+        int R = newInterval[1];
+        bool placed = false;              //判断新区间是否已插入
+        for(const auto& interval:intervals){
+            if(interval[0]>R){               //在新区间右边且不重合
+                if(!placed){
+                    result.push_back({L,R});
+                    placed = true;
+                }
+                result.push_back(interval);
+            }
+            else if(interval[1]<L) result.push_back(interval);         //在新区间左边且不重合
+            else{                            //和新区间有重合的地方
+                L = min(L, interval[0]);
+                R = max(R, interval[1]);
+            }
+        }
+        if(!placed) result.push_back({L,R});
+        return result;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
