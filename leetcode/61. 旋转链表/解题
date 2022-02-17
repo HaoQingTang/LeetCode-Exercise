@@ -1,0 +1,48 @@
+【C++】
+
+一：闭合为环，找到新链表最后一个节点
+记给定链表的长度为n，注意到当向右移动的次数k≥n时，我们仅需要向右移动kmodn次即可。因为每n次移动都会让链表变为原状。这样我们可以知道，新链表的最后一个节点为原链表的
+第(n−1)−(kmodn)个节点（从0开始计数）。
+
+这样，我们可以先将给定的链表连接成环，然后将指定位置断开。
+
+具体代码中，我们首先计算出链表的长度n，并找到该链表的末尾节点，将其与头节点相连。这样就得到了闭合为环的链表。然后我们找到新链表的最后一个节点（即原链表的第(n−1)−(kmodn)个节点），
+将当前闭合为环的链表断开，即可得到我们所需要的结果。
+
+特别地，当链表长度不大于1，或者k为n的倍数时，新链表将与原链表相同，我们无需进行任何处理。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
+        if(k==0||!head ||!head->next) return head;
+        ListNode* tmp = new ListNode(-1);
+        tmp->next = head;
+        int len = 0;
+        while(tmp->next){
+            tmp = tmp->next;
+            len++;
+        }
+        int end = len-(k%len);
+        if(end==len) return head;
+        tmp->next = head;
+        while(end--){
+            tmp = tmp->next;
+        }
+        ListNode* root = tmp->next;
+        tmp->next = nullptr;
+        return root;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
