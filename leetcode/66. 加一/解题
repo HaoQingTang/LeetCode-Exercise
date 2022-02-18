@@ -1,0 +1,23 @@
+【C++】
+
+一：
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        vector<int> result;
+        int val = digits[digits.size()-1]+1;
+        result.push_back(val%10);
+        int num = val/10;
+        for(int i=digits.size()-2; i>=0; i--){
+            val = digits[i]+num;
+            result.push_back(val%10);
+            num = val/10;
+        }
+        if(num!=0) result.push_back(num);
+        reverse(result.begin(),result.end());
+        return result; 
+    }
+};
+
+时间复杂度：O(n)，其中n是数组digits的长度。
+空间复杂度：O(1)。返回值不计入空间复杂度
