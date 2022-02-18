@@ -1,0 +1,29 @@
+【C++】
+
+一：动态规划
+
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> dp(m,vector<int>(n));
+        dp[0][0] = grid[0][0];
+        for(int i=1; i<n; i++){
+            dp[0][i] = dp[0][i-1]+grid[0][i];
+        }
+        for(int i=1; i<m; i++){
+            dp[i][0] = dp[i-1][0]+grid[i][0];
+        }
+        for(int i=1; i<m; i++){
+            for(int j=1; j<n; j++){
+                dp[i][j] = grid[i][j]+min(dp[i-1][j],dp[i][j-1]);
+            }
+        }
+        return dp[m-1][n-1];
+    }
+};
+
+时间复杂度：O(mn)，其中m和n分别是网格的行数和列数。需要对整个网格遍历一次，计算dp的每个元素的值。
+空间复杂度：O(mn)，其中m和n分别是网格的行数和列数。创建一个二维数组dp，和网格大小相同。
+空间复杂度可以优化，例如每次只存储上一行的dp值，则可以将空间复杂度优化到O(n)。
