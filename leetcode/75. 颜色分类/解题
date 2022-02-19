@@ -1,0 +1,83 @@
+【C++】
+
+一：单指针
+交换两次
+
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int p = 0;
+        int n = nums.size();
+        for(int i=0; i<n; i++){                   //交换0
+            if(nums[i]==0){
+                swap(nums[i],nums[p]);
+                p++;
+            }
+        }
+        for(int i=p; i<n; i++){
+            if(nums[i]==1){                      //交换1，p前面的都是0
+                swap(nums[i],nums[p]);
+                p++;
+            }
+        }
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+二：双指针
+交换1次
+指针1：交换0 从左往右
+指针2：交换1 从左往右
+
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int p0 = 0, p1 = 0;
+        int n = nums.size();
+        for(int i=0; i<n; i++){
+            if(nums[i]==1){
+                swap(nums[i],nums[p1]);
+                p1++;
+            }
+            else if(nums[i]==0){
+                swap(nums[i],nums[p0]);
+                if(p0<p1){
+                    swap(nums[i],nums[p1]);   //在前面交换0时可能会把1重新交换出去
+                }
+                p0++;
+                p1++;
+            }
+        }
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+三：双指针
+交换1次
+指针1：交换0 从左往右
+指针2：交换2 从右往左
+
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int n = nums.size();
+        int p0 = 0, p2 = n-1;
+        for(int i=0; i<=p2; i++){
+            while(i<=p2 && nums[i]==2){
+                swap(nums[i],nums[p2]);
+                p2--;
+            }
+            if(nums[i]==0){
+                swap(nums[i],nums[p0]);
+                p0++;a
+            }
+        }
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
