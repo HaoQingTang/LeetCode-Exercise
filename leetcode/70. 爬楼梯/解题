@@ -1,0 +1,23 @@
+【C++】
+
+一：动态规划
+
+class Solution {
+public:
+    int climbStairs(int n) {
+        if(n==1) return 1;
+        if(n==2) return 2;
+        int numa = 1;
+        int numb = 2;
+        int num;
+        for(int i=3;i<=n;i++){
+            num = numa+numb;
+            numa = numb;
+            numb = num;
+        }
+        return num;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
