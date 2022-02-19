@@ -67,7 +67,7 @@ public:
         int n = nums.size();
         int p0 = 0, p2 = n-1;
         for(int i=0; i<=p2; i++){
-            while(i<=p2 && nums[i]==2){
+            while(i<=p2 && nums[i]==2){            //i>p2时，2会被重新交换走
                 swap(nums[i],nums[p2]);
                 p2--;
             }
