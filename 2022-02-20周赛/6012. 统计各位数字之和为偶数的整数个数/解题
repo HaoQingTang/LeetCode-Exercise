@@ -1,0 +1,54 @@
+【C++】
+
+一：模拟
+class Solution {
+public:
+    int countEven(int num) {
+        if(num==1) return 0;
+        int count = 0;
+        for(int i=2; i<=num; i++){
+            if(check(i)) count++;
+        }
+        return count;
+    }
+
+    bool check(int num){
+        int checknum = 0;
+        while(num>0){                    //逐位加
+            checknum += num%10;
+            num /= 10;
+        }
+        return (checknum%2==0);
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+二：数学
+可将num分解为两部分：
+第一部分：num // 10（十位及以上部分），包含的目标个数为 num // 10 * 5（可能包含了整数0）。
+num//10 乘以5 是因为若 numnum中 存在十位， 则每一个十位必包含5个目标整数，其对应的个位为[1，3，5，7，9] 或[0，2，4，6，8]。
+
+第二部分：num % 10（个位部分），包含的目标个数可根据num // 10 各位数字之和的 奇偶性 来判断：
+为奇数，第二部分目标个数则为 (num%10+1)//2 （对应于[1，3，5，7，9]）
+为偶数，第二部分目标个数则为 (num%10+2)//2 （对应于[0，2，4，6，8]）
+
+最后，两部分相加，再减1（排除整数0）即可。
+
+[python]
+class Solution:
+    def countEven(self, num: int) -> int:
+        
+        cnt = num//10 * 5     # 十位及以上部分【可能包含了整数0】
+        
+        # 个位部分：根据十位及以上部分各位数字之和的奇偶性进行判断
+        if sum(map(int, str(num//10))) % 2 == 0:    # 为偶数
+            cnt += (num%10+2)//2
+        else:                                       # 为奇数
+            cnt += (num%10+1)//2
+            
+        return cnt - 1  # 去掉整数0
+  
+时间复杂度：O(1)
+空间复杂度：O(1)
