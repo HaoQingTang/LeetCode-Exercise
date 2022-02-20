@@ -1,0 +1,41 @@
+【C++】
+
+一：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeNodes(ListNode* head) {
+        ListNode* tmp = nullptr;
+        ListNode* root = new ListNode(-1);
+        ListNode* cur = head;
+        while(cur->next){
+            int val = 0;
+            while(cur->next->val!=0){
+                cur = cur->next;
+                val += cur->val;
+            }
+            if(tmp==nullptr){
+                tmp = cur;
+                tmp->val = val;
+                root = tmp;
+            }
+            else{
+                tmp->next = cur;
+                tmp = tmp->next;
+                tmp->val = val;
+            }
+            cur = cur->next;
+        }
+        tmp->next = nullptr;
+        return root;
+    }
+};
