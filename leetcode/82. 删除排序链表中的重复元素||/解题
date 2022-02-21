@@ -1,0 +1,91 @@
+【C++】
+
+一：一次遍历
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        if(!head) return head;
+        ListNode* dummy = new ListNode(0,head);
+        ListNode* cur = dummy;
+        while(cur->next && cur->next->next){
+            if(cur->next->val == cur->next->next->val){
+                int val = cur->next->val;
+                while(cur->next && cur->next->val==val){
+                    cur->next = cur->next->next;               //删除节点
+                }
+            }
+            else cur = cur->next;
+        }
+        return dummy->next;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+二：递归
+1.1 递归函数定义
+递归最基本的是要明白递归函数的定义！
+递归函数直接使用题目给出的函数 deleteDuplicates(head) ，它的含义是删除以 head 作为开头的有序链表中，值出现重复的节点。
+
+1.2 递归终止条件
+终止条件就是能想到的基本的、不用继续递归处理的case。
+
+如果 head 为空，那么肯定没有值出现重复的节点，直接返回 head；
+如果 head.next 为空，那么说明链表中只有一个节点，也没有值出现重复的节点，也直接返回 head。
+
+1.3 递归调用
+什么时候需要递归呢？我们想一下这两种情况：
+
+如果 head.val != head.next.val ，说明头节点的值不等于下一个节点的值，所以当前的 head 节点必须保留；
+但是 head.next 节点要不要保留呢？我们还不知道，需要对 head.next 进行递归，即对 head.next 作为头节点的链表，去除值重复的节点。所以 head.next = self.deleteDuplicates(head.next).
+如果 head.val == head.next.val ，说明头节点的值等于下一个节点的值，所以当前的 head 节点必须删除，并且 head 之后所有与 head.val 相等的节点也都需要删除；
+删除到哪个节点为止呢？需要用 move 指针一直向后遍历寻找到与 head.val 不等的节点。此时 move 之前的节点都不保留了，因此返回 deleteDuplicates(move);
+
+1.4 返回结果
+题目让我们返回删除了值重复的节点后剩余的链表，结合上面两种递归调用的情况。
+
+如果 head.val != head.next.val ，头结点需要保留，因此返回的是 head；
+如果 head.val == head.next.val ，头结点需要删除，需要返回的是deleteDuplicates(move);。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        if(!head || !head->next) return head;
+        if(head->val != head->next->val){
+            head->next = deleteDuplicates(head->next);
+        }
+        else{
+            ListNode* move = head->next;
+            while(move && head->val == move->val){
+                move = move->next;
+            }
+            return deleteDuplicates(move);
+        }
+        return head;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
