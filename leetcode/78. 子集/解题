@@ -1,0 +1,53 @@
+【C++】
+
+一：回溯
+class Solution {
+public:
+    void dfs(vector<vector<int>>& result, vector<int>& nums, int pos, vector<int>& tmp){
+        if(pos == nums.size()){
+            result.push_back(tmp);
+            return;
+        }
+        tmp.push_back(nums[pos]);               //选择该位置
+        dfs(result, nums, pos+1, tmp);
+        tmp.pop_back();
+        dfs(result, nums, pos+1, tmp);          //不选择该位置
+    }
+
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> result;
+        vector<int> tmp;
+        dfs(result, nums, 0, tmp);
+        return result;
+    }
+};
+
+时间复杂度：O(n×2^n)。一共2^n个状态，每种状态需要O(n)的时间来构造子集。
+空间复杂度：O(n)。临时数组t的空间代价是O(n)，递归时栈空间的代价为O(n)。
+
+二：迭代（二进制）
+0/1序列对应的二进制数正好从0到 2^n-1。我们可以枚举mask∈[0,2^n−1]，mask的二进制表示是一个0/1序列，我们可以按照这个0/1序列在原集合当中取数。当我们枚举完所有2^n个mask，
+我们也就能构造出所有的子集。
+
+class Solution {
+public:
+    vector<int> t;
+    vector<vector<int>> ans;
+
+    vector<vector<int>> subsets(vector<int>& nums) {
+        int n = nums.size();
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            t.clear();
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) {
+                    t.push_back(nums[i]);
+                }
+            }
+            ans.push_back(t);
+        }
+        return ans;
+    }
+};
+
+时间复杂度：O(n×2^n)。一共2^n个状态，每种状态需要O(n)的时间来构造子集。
+空间复杂度：O(n)。即构造子集使用的临时数组t的空间代价。
