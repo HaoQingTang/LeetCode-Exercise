@@ -1,0 +1,30 @@
+【C++】
+
+一：递归回溯
+同一树层不能重复取相同的数，同一树枝可以重复取相同的数。
+
+class Solution {
+public:
+    void dfs(vector<vector<int>>& result, vector<int>& nums, int pos, vector<int>& tmp){
+        result.push_back(tmp);
+        if(pos == nums.size()) return;
+        for(int i=pos; i<nums.size(); i++){
+            if(i>pos && nums[i]==nums[i-1]){
+                continue;
+            }
+            tmp.push_back(nums[i]);
+            dfs(result, nums, i+1, tmp);
+            tmp.pop_back();
+        }
+    }
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        vector<vector<int>> result;
+        vector<int> tmp;
+        sort(nums.begin(), nums.end());
+        dfs(result, nums, 0, tmp);
+        return result;
+    }
+};
+
+时间复杂度：O(n×2^n)，其中n是数组nums的长度。
+空间复杂度：O(n)。临时数组t的空间代价是O(n)，递归时栈空间的代价为O(n)。
