@@ -1,0 +1,130 @@
+【C++】
+
+一：
+把链表复制到栈或列表中，用双指针从两端开始遍历。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        if(!head->next) return true;
+        stack<ListNode*> stk;
+        ListNode* left = head;
+        ListNode* right = head;
+        while(right->next){
+            stk.push(right);
+            right = right->next;
+        }
+        while(left!=right && right->next!=left){
+            if(right->val!=left->val) return false;
+            else{
+                right = stk.top();
+                stk.pop();
+                left = left->next;
+            }
+        }
+        return true;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：快慢指针
+整个流程可以分为以下五个步骤：
+1. 找到前半部分链表的尾节点。
+2. 反转后半部分链表。
+3. 判断是否回文。
+4. 恢复链表。
+5. 返回结果。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        if(!head->next) return true;
+        ListNode* mid = findmiddle(head);
+        ListNode* newhead = reverse(mid->next);
+        ListNode* p = newhead;
+        while(newhead){
+            if(head->val!=newhead->val) return false;
+            else{
+                head = head->next;
+                newhead = newhead->next;
+            }
+        }
+        mid->next = reverse(p);
+        return true;
+    }
+
+    ListNode* findmiddle(ListNode* head){          //寻找链表的中间位置
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while(fast->next->next && fast->next){
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        return slow;
+    }
+
+    ListNode* reverse(ListNode* head){              //反转链表
+        ListNode* tmp = nullptr;
+        ListNode* cur = head;
+        while(cur->next){
+            ListNode* newroot = cur->next;
+            cur->next = tmp;
+            tmp = cur;
+            cur = newroot;
+        }
+        cur->next = tmp;
+        return cur;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+三：递归
+class Solution {
+    ListNode* frontPointer;
+public:
+    bool recursivelyCheck(ListNode* currentNode) {
+        if (currentNode != nullptr) {
+            if (!recursivelyCheck(currentNode->next)) {
+                return false;
+            }
+            if (currentNode->val != frontPointer->val) {
+                return false;
+            }
+            frontPointer = frontPointer->next;
+        }
+        return true;
+    }
+
+    bool isPalindrome(ListNode* head) {
+        frontPointer = head;
+        return recursivelyCheck(head);
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(1)
