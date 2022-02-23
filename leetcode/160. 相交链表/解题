@@ -1,0 +1,66 @@
+【C++】
+
+一：双指针
+
+使用双指针的方法，可以将空间复杂度降至O(1)。
+只有当链表headA和headB都不为空时，两个链表才可能相交。因此首先判断链表headA和headB是否为空，如果其中至少有一个链表为空，则两个链表一定不相交，返回null。
+
+当链表headA和headB都不为空时，创建两个指针pA和pB，初始时分别指向两个链表的头节点headA和headB，然后将两个指针依次遍历两个链表的每个节点。具体做法如下：
+
+每步操作需要同时更新指针pA和pB。
+如果指针pA不为空，则将指针pA移到下一个节点；如果指针pB不为空，则将指针pB移到下一个节点。
+如果指针pA为空，则将指针pA移到链表headB的头节点；如果指针pB为空，则将指针pB移到链表headA的头节点。
+
+当指针pA和pB指向同一个节点或者都为空时，返回它们指向的节点或者null。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode* pA = headA;
+        ListNode* pB = headB;
+        while(pA != pB){
+            pA = (pA)?pA->next:headB;
+            pB = (pB)?pB->next:headA;
+        }
+        return pA;
+    }
+};
+
+时间复杂度：O(m+n)
+空间负载：O(1)
+
+二：哈希表
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        unordered_set<ListNode*> set;
+        while(headA){
+            set.insert(headA);
+            headA = headA->next;
+        }
+        while(headB){
+            if(set.find(headB)!=set.end()) return headB;
+            else headB = headB->next;
+        }
+        return NULL;
+    }
+};
+
+时间复杂度：O(m+n)
+空间负载：O(m)
