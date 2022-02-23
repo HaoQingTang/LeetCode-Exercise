@@ -1,0 +1,40 @@
+【C++】
+
+一：
+用数组记录每个节点。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    void reorderList(ListNode* head) {
+        vector<ListNode*> vec1;
+        ListNode* cur = head;
+        while(cur){
+            vec1.push_back(cur);
+            cur = cur->next;
+        }
+        int i = 0, j = vec1.size()-1;
+        while(i<j){
+            vec1[i]->next = vec1[j];
+            i++;
+            if(i==j) break;
+            vec1[j]->next = vec1[i];
+            j--;
+        } 
+        vec1[i]->next = nullptr;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：
