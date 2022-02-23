@@ -1,0 +1,36 @@
+【C++】
+
+一：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* insertionSortList(ListNode* head) {
+        if(!head->next) return head;
+        ListNode* dummy = new ListNode(0,head);
+        ListNode* cur = head;
+        while(cur->next){
+            if(cur->next->val>=cur->val) cur = cur->next;
+            else{
+                ListNode* tmp = dummy;
+                ListNode* newroot = cur->next;
+                while(tmp->next->val<=newroot->val) tmp = tmp->next;
+                cur->next = newroot->next;
+                newroot->next = tmp->next;
+                tmp->next = newroot;
+            }
+        }
+        return dummy->next;
+    }
+};
+
+时间复杂度：O(n^2)
+空间复杂度：O(1)
