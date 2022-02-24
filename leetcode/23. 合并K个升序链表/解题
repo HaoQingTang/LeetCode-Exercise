@@ -1,0 +1,145 @@
+【C++】
+
+一：顺序合并
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        int len = lists.size();
+        if(len==0) return nullptr;
+        else if(len==1) return lists[0];
+        else{
+            ListNode* mergeroot = lists[0];
+            for(int i=1; i<len; i++){
+                mergeroot = merge(mergeroot,lists[i]);
+            }
+            return mergeroot;
+        }
+    }
+
+    ListNode* merge(ListNode* head1, ListNode* head2){
+       if(!head1 || !head2) return head1?head1:head2;
+       ListNode head, *tail = &head;
+       ListNode* p1 = head1;
+       ListNode* p2 = head2;
+       while(p1&&p2){
+           if(p1->val<p2->val){
+               tail->next = p1;
+               p1 = p1->next;
+           }
+           else{
+               tail->next = p2;
+               p2 = p2->next;
+           }
+           tail = tail->next;
+       }
+       tail->next = p1?p1:p2;
+       return head.next;
+    }  
+};
+
+时间复杂度：O(k^2*n)
+空间复杂度：O(1)
+
+二：分而治之
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        int len = lists.size();
+        if(len==0) return nullptr;
+        else if(len==1) return lists[0];
+        else{
+            ListNode* mergeroot = mergedivided(lists,0,len-1);
+            return mergeroot;
+        }
+    }
+
+    ListNode*mergedivided(vector<ListNode*>& lists, int l, int r){
+        if(l==r) return lists[l];
+        else if(l>r) return nullptr;
+        else{
+            int mid = (l+r)/2;
+            return merge(mergedivided(lists,l,mid),mergedivided(lists,mid+1,r));
+        }
+    }
+
+    ListNode* merge(ListNode* head1, ListNode* head2){
+       if(!head1 || !head2) return head1?head1:head2;
+       ListNode head, *tail = &head;
+       ListNode* p1 = head1;
+       ListNode* p2 = head2;
+       while(p1&&p2){
+           if(p1->val<p2->val){
+               tail->next = p1;
+               p1 = p1->next;
+           }
+           else{
+               tail->next = p2;
+               p2 = p2->next;
+           }
+           tail = tail->next;
+       }
+       tail->next = p1?p1:p2;
+       return head.next;
+    }  
+};
+
+
+时间复杂度：O(knlog(k))
+空间复杂度：O(log(k))
+
+三：优先队列
+
+需要维护当前每个链表没有被合并的元素的最前面一个，k个链表就最多有k个满足这样条件的元素，每次在这些元素里面选取val属性最小的元素合并到答案中。
+在选取最小元素的时候，我们可以用优先队列来优化这个过程。
+
+class Solution {
+public:
+    struct Status {
+        int val;
+        ListNode *ptr;
+        bool operator < (const Status &rhs) const {
+            return val > rhs.val;
+        }
+    };
+
+    priority_queue <Status> q;
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        for (auto node: lists) {
+            if (node) q.push({node->val, node});
+        }
+        ListNode head, *tail = &head;
+        while (!q.empty()) {
+            auto f = q.top(); q.pop();
+            tail->next = f.ptr; 
+            tail = tail->next;
+            if (f.ptr->next) q.push({f.ptr->next->val, f.ptr->next});
+        }
+        return head.next;
+    }
+};
+
+时间复杂度：考虑优先队列中的元素不超过k个，那么插入和删除的时间代价为O(logk)，这里最多有kn个点，对于每个点都被插入删除各一次，故总的时间代价即渐进时间复杂度为O(kn×logk)。
+空间复杂度：这里用了优先队列，优先队列中的元素不超过k个，故渐进空间复杂度为O(k)。
