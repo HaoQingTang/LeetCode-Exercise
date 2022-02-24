@@ -1,0 +1,47 @@
+【C++】
+
+一：
+class MinStack {
+public:
+
+    stack<int> stk1;
+    stack<int> stk2;
+
+    MinStack() {
+    }
+    
+    void push(int val) {
+        stk1.push(val);
+        if(stk2.empty()||stk2.top()>val){
+            stk2.push(val);
+        }
+        else{
+            stk2.push(stk2.top());
+        }
+    }
+    
+    void pop() {
+        stk1.pop();
+        stk2.pop();
+    }
+    
+    int top() {
+        return stk1.top();
+    }
+    
+    int getMin() {
+        return stk2.top();
+    }
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack* obj = new MinStack();
+ * obj->push(val);
+ * obj->pop();
+ * int param_3 = obj->top();
+ * int param_4 = obj->getMin();
+ */
+ 
+时间复杂度：对于题目中的所有操作，时间复杂度均为O(1)。因为栈的插入、删除与读取操作都是O(1)，我们定义的每个操作最多调用栈操作两次。
+空间复杂度：O(n)，其中n为总操作数。最坏情况下，我们会连续插入n个元素，此时两个栈占用的空间为O(n)。
