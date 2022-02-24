@@ -1,0 +1,53 @@
+【C++】
+
+一：辅助栈
+
+遍历这个栈：
+如果当前的字符为数位，解析出一个数字（连续的多个数位）并进栈
+如果当前的字符为字母或者左括号，直接进栈
+如果当前的字符为右括号，开始出栈，一直到左括号出栈，出栈序列反转后拼接成一个字符串，此时取出栈顶的数字，就是这个字符串应该出现的次数，我们根据这个次数和字符串构造出新的字符串并进栈
+
+重复如上操作，最终将栈中的元素按照从栈底到栈顶的顺序拼接起来，就得到了答案。注意：这里可以用不定长数组来模拟栈操作，方便从栈底向栈顶遍历。
+
+class Solution {
+public:
+    string decodeString(string s) {
+        stack<string> stk;
+        int i = 0;
+        while(i<s.size()){
+            string strval;
+            while(isdigit(s[i])){
+                strval = strval+string(1,s[i]);
+                i++;
+            }
+            stk.push(strval);
+            if(s[i]=='['||isalpha(s[i])) stk.push(string(1,s[i]));
+            else{
+                string str = "";
+                while(stk.top()!="["){
+                    str = stk.top()+str;
+                    stk.pop();
+                }
+                stk.pop();
+                string strval = stk.top();
+                stk.pop();
+                int val = stoi(strval);                    //stoi可以把string转换成int
+                string tmp="";
+                for(int i=0; i<val; i++){
+                    tmp = tmp+str;
+                }
+                stk.push(tmp);
+            }
+            i++;
+        }
+        string result;
+        while(!stk.empty()){
+            result = stk.top()+result;
+            stk.pop();
+        }
+        return result;
+    }
+};
+
+时间复杂度：记解码后得出的字符串长度为S，除了遍历一次原字符串s，我们还需要将解码后的字符串中的每个字符都入栈，并最终拼接进答案中，故渐进时间复杂度为O(S+∣s)，即O(S)。
+空间复杂度：记解码后得出的字符串长度为S，这里用栈维护 TOKEN，栈的总大小最终与S相同，故渐进空间复杂度为O(S)。
