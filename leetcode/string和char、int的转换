@@ -1,0 +1,54 @@
+1. string转char*
+（1）data()方法
+string str = "hello world";
+const char *p = str.data();
+注：若不加 const,编译时会报错：无法从 "const char*" 转换为 "char*"
+
+（2）c_str()方法
+string str = "hello world";
+const char *p = str.c_str();
+
+（3）copy()方法
+string str = "hello world";
+char buf[50];
+str.copy(buf,11,0);           //11代表11个字符，0代表从0开始复制
+*(buf+11) = '\0';             //手动添加结束符
+
+2. char*转string
+直接赋值
+string str;
+char* p = "hello";
+str = p;
+
+注意：当p中含有较多'\0'时，转换的string是截断后的，正确转换为：
+string str(p, size);
+
+3. string转char[]
+string str = "hello";
+char p[8];
+ 
+int i;
+ 
+for(i=0; i<str.length(); ++i)
+{
+    p[i] = str[i];
+}
+ 
+p[i] = '\0'; //这一步比较重要
+ 
+4. char[]转string
+直接赋值
+char p[60] = "hello";
+string str;
+str = p;
+
+5.char转string
+char ch;
+string str;
+str = string(1, ch);
+
+6. int转string
+to_string()
+
+7.string转int
+stoi()
