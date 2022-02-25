@@ -1,0 +1,86 @@
+【C++】
+
+一：哈希表
+
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        map<int, int> map1;
+        for(int x:nums){
+            map1[x]++;
+        }
+        int maxval = 0;
+        int count = 0;
+        int val = 0;
+        for(auto it=map1.begin(); it!=map1.end(); it++){
+            if(it==map1.begin() || it->first == val+1){
+                val = it->first;
+                count++;
+                maxval = max(maxval, count);
+            }
+            else{
+                val = it->first;
+                count = 1;
+            }
+        }
+        return maxval;
+
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        // 建立一个存储所有数的哈希表，同时起到去重功能
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+
+        int ans = 0;
+        // 遍历所有数字，已经经过去重
+        for (int num : set) {
+            int cur = num;
+            // 只有当num-1不存在时，才开始向后遍历num+1，num+2，num+3......
+            if (!set.contains(cur - 1)) {
+                while (set.contains(cur + 1)) {
+                    cur++;
+                }
+            }
+            // [num, cur]之间是连续的，数字有cur - num + 1个
+            ans = Math.max(ans, cur - num + 1);
+        }
+        return ans;
+    }
+}
+
+二：哈希表记录右边界
+这种方法其实也是思路1的变种，用于减少遍历次数。做法是建立一个哈希表，记录每个元素num能够连续到达的右边界，这样在内层循环遍历到一个新元素时，无需经过多次+1遍历+判断才能到达右边界，
+直接取值即可。
+
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        // key表示num，value表示num最远到达的连续右边界
+        Map<Integer, Integer> map = new HashMap<>();
+        // 初始化每个num的右边界为自己
+        for (int num : nums) {
+            map.put(num, num);
+        }
+
+        int ans = 0;
+        for (int num : nums) {
+            int right = map.get(num);
+            // 遍历得到最远的右边界
+            while (map.containsKey(right + 1)) {
+                right = map.get(right + 1);
+            }
+            // 更新右边界
+            map.put(num, right);
+            // 更新答案
+            ans = Math.max(ans, right - num + 1);
+        }
+        return ans;
+    }
+}
