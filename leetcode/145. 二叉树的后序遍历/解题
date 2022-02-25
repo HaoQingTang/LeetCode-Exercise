@@ -1,0 +1,77 @@
+【C++】
+
+一：递归
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void postorder(TreeNode* root, vector<int>& result){
+        if(!root) return;
+        postorder(root->left, result);
+        postorder(root->right, result);
+        result.push_back(root->val);
+    }
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        postorder(root, result);
+        return result;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：迭代
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> stk;
+        TreeNode* node = root;
+        TreeNode* prev = nullptr;          //判断节点是否已经输出
+        while(!stk.empty()||node!=nullptr){
+            while(node!=nullptr){
+                stk.push(node);
+                node = node->left;
+            }
+            node = stk.top();
+            stk.pop();
+            if(node->right==nullptr||node->right==prev){
+                result.push_back(node->val);
+                prev = node;
+                node = nullptr;
+            }
+            else{             //右分支仍未遍历
+                stk.push(node);
+                node = node->right;
+            }
+        }
+        return result;
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(n)
