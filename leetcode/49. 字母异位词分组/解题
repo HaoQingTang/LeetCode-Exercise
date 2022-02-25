@@ -1,0 +1,54 @@
+【C++】
+
+一：排序
+对各字符串进行排序，排序后结果用哈希表记录
+
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> map;
+        for(string& str:strs){
+            string key = str;
+            sort(key.begin(),key.end());                           //对字符串排序
+            map[key].push_back(str);
+        }
+        vector<vector<string>> result;
+        for(auto it=map.begin(); it!=map.end(); it++){                    //哈希表的遍历
+            result.push_back(it->second);
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(nklogk)，其中n是strs中的字符串的数量，k是strs中的字符串的的最大长度。需要遍历n个字符串，对于每个字符串，需要O(klogk) 的时间进行排序以及O(1) 的时间更新哈希表，
+因此总时间复杂度是O(nklogk)。
+空间复杂度：O(nk)，其中n是strs中的字符串的数量，k是strs中的字符串的的最大长度。需要用哈希表存储全部字符串。
+
+二：计数
+用计数后的数量和对应的字母作为哈希表的key
+
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> map;
+        for(string& str:strs){
+            vector<int> count(26,0);
+            for(auto s:str){
+                count[s-'a']++;
+            }
+            string key;
+            for(int i=0; i<26; i++){
+                if(count[i]!=0){
+                    key = key+string(1,(i+'a'));
+                    key = key+to_string(count[i]);
+                }
+            }
+            map[key].push_back(str);
+        }
+        vector<vector<string>> result;
+        for(auto it=map.begin(); it!=map.end(); it++){                    //哈希表的遍历
+            result.push_back(it->second);
+        }
+        return result;
+    }
+};
