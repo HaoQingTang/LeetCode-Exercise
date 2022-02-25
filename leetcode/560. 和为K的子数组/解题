@@ -1,0 +1,84 @@
+【C++】
+
+一：暴力（超出时间限制）
+
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        int count = 0;
+        for(int i=0; i<nums.size(); i++){
+            int sum = nums[i];
+            if(nums[i]==k){
+                count += 1;
+            }
+            for(int j=i+1; j<nums.size();j++){
+                sum += nums[j];
+                if(sum==k){
+                    count += 1;
+                }
+            }
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(n^2)
+空间复杂度：O(1)
+
+二：枚举前缀和（超出时间限制）
+考虑以i结尾和为k的连续子数组个数，我们需要统计符合条件的下标j的个数，其中0≤j≤i且[j..i] 这个子数组的和恰好为k。
+
+我们可以枚举[0..i] 里所有的下标j来判断是否符合条件，可能有读者会认为假定我们确定了子数组的开头和结尾，还需要O(n)的时间复杂度遍历子数组来求和，那样复杂度就将达到O(n^3)从而无法通过
+所有测试用例。但是如果我们知道[j,i]子数组的和，就能O(1)推出[j−1,i]的和，因此这部分的遍历求和是不需要的，我们在枚举下标j的时候已经能O(1)求出[j,i]的子数组之和。
+
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        int count = 0;
+        for(int i=0; i<nums.size(); i++){
+            int sum = 0;
+            for(int end=i; end>=0; end--){
+                sum += nums[end];
+                if(sum==k) count++;
+            }
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(n^2)
+空间复杂度：O(1)
+
+三：前缀和+哈希表
+定义pre[i]为[0..i]里所有数的和，则pre[i]可以由pre[i−1]递推而来，即：pre[i]=pre[i−1]+nums[i]
+
+那么「[j..i]这个子数组和为k」这个条件我们可以转化为 pre[i]−pre[j−1]==k
+
+简单移项可得符合条件的下标j需要满足  pre[j−1]==pre[i]−k
+
+所以我们考虑以i结尾的和为k的连续子数组个数时只要统计有多少个前缀和为pre[i]−k的pre[j] 即可。我们建立哈希表mp，以和为键，出现次数为对应的值，记录 pre[i] 出现的次数，
+从左往右边更新mp 边计算答案，那么以i结尾的答案mp[pre[i]−k] 即可在O(1)时间内得到。最后的答案即为所有下标结尾的和为k的子数组个数之和。
+
+需要注意的是，从左往右边更新边计算的时候已经保证了mp[pre[i]−k] 里记录的pre[j] 的下标范围是0≤j≤i 。同时，由于pre[i] 的计算只与前一项的答案有关，
+因此我们可以不用建立pre 数组，直接用pre 变量来记录pre[i−1] 的答案即可。
+
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        unordered_map<int, int> map;
+        map[0] = 1;
+        int sum = 0;
+        int count = 0;
+        for(int num:nums){
+            sum += num;
+            if(map.find(sum-k)!=map.end()){
+                count += map[sum-k];
+            }
+            map[sum] += 1;
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
