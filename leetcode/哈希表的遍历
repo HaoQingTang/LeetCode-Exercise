@@ -1,0 +1,11 @@
+1.
+for(auto it=map.begin(); it!=map.end(); it++){
+    it->first;                         //key value
+    it->second;                        //mapped value
+}
+
+2.
+for(auto& x:map){
+    x.first;                           //key value
+    x.second;                          //mapped value
+}
