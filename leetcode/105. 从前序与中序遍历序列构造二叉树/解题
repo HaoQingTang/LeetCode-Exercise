@@ -1,0 +1,44 @@
+【C++】
+
+一：递归
+
+在中序遍历中对根节点进行定位时，一种简单的方法是直接扫描整个中序遍历的结果并找出根节点，但这样做的时间复杂度较高。我们可以考虑使用哈希表来帮助我们快速地定位根节点。
+对于哈希映射中的每个键值对，键表示一个元素（节点的值），值表示其在中序遍历中的出现位置。在构造二叉树的过程之前，我们可以对中序遍历的列表进行一遍扫描，就可以构造出这个哈希映射。
+在此后构造二叉树的过程中，我们就只需要O(1)的时间对根节点进行定位了。
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    unordered_map<int, int> map;
+    TreeNode* mybuildTree(vector<int>& preorder, vector<int>& inorder, int prestart, int preend, int instart, int inend){
+        if(prestart>preend) return nullptr;
+        int preroot = prestart;
+        int inroot = map[preorder[preroot]];
+        TreeNode* node = new TreeNode(preorder[preroot]);
+        int leftlen = inroot -instart;
+        node->left = mybuildTree(preorder, inorder, prestart+1, prestart+leftlen,instart,inroot-1);
+        node->right = mybuildTree(preorder, inorder, prestart+leftlen+1, preend, inroot+1, inend);
+        return node;
+    }
+
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        for(int i=0; i<preorder.size(); i++){
+            map[inorder[i]] = i;              //记录中序遍历中每一个节点的位置，方便后续找根节点
+        }
+        int len = preorder.size();
+        return mybuildTree(preorder, inorder, 0, len-1, 0, len-1);
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
