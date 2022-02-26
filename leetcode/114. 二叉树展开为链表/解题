@@ -112,5 +112,21 @@ public:
 };
 
 
+class Solution {
+    public void flatten(TreeNode root) {
+        //左子不为空，则把右子断开挂在右边首次没有右子的地方
+        if(root==null){return;}        
+        if(root.left!=null){
+            TreeNode l=root.left;
+            TreeNode r=root.right;
+            root.left=null;
+            root.right=l;
+            while(l.right!=null){l=l.right;}
+            l.right=r;
+        }
+        flatten(root.right);
+    }
+}
+
 时间复杂度：O(n)
 空间复杂度：O(1)
