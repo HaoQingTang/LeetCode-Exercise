@@ -1,0 +1,76 @@
+【C++】
+
+一：递归
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool check(TreeNode* root1, TreeNode* root2){
+        if(!root1 && !root2) return true;
+        if(!root1 || !root2) return false;
+        if(root1->val!=root2->val) return false;
+        else return check(root1->left, root2->right) && check(root1->right, root2->left);
+    }
+    bool isSymmetric(TreeNode* root) {
+        return check(root->left, root->right);
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：迭代
+
+引入一个队列，这是把递归程序改写成迭代程序的常用方法。初始化时我们把根节点入队两次。每次提取两个结点并比较它们的值（队列中每两个连续的结点应该是相等的，而且它们的子树互为镜像），
+然后将两个结点的左右子结点按相反的顺序插入队列中。当队列为空时，或者我们检测到树不对称（即从队列中取出两个不相等的连续结点）时，该算法结束。
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool check(TreeNode* root1, TreeNode* root2){
+        queue<TreeNode*> q;
+        q.push(root1);
+        q.push(root2);
+        while(!q.empty()){
+            root1 = q.front();
+            q.pop();
+            root2 = q.front();
+            q.pop();
+            if(!root1&&!root2) continue;
+            if((!root1||!root2)||(root1->val!=root2->val)) return false;
+
+            q.push(root1->left);
+            q.push(root2->right);
+            q.push(root1->right);
+            q.push(root2->left);
+        }
+        return true;
+    }
+    bool isSymmetric(TreeNode* root) {
+        return check(root->left, root->right);
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(n)
