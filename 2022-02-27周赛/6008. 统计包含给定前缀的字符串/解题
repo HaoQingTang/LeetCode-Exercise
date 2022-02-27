@@ -1,0 +1,23 @@
+【C++】
+
+一：
+
+class Solution {
+public:
+    int prefixCount(vector<string>& words, string pref) {
+        int count = 0;
+        for(int i=0; i<words.size(); i++){
+            int len = words[i].size();
+            if(len<pref.size()) continue;
+            int j=0;
+            for(; j<pref.size(); j++){
+                if(words[i][j]!=pref[j]) break;
+            }
+            if(j==pref.size()) count += 1;
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(n^2)
+空间复杂度：O(1)
