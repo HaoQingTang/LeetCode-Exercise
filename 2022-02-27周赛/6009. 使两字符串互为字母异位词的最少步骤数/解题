@@ -1,0 +1,30 @@
+【C++】
+
+一：哈希表
+
+class Solution {
+public:
+    int minSteps(string s, string t) {
+        unordered_map<char, int> maps;
+        unordered_map<char, int> mapt;
+        int count=0;
+        for(char chs:s){
+            maps[chs] ++;
+        }
+        for(char cht:t){
+            mapt[cht] ++;
+        }
+        for(auto it=maps.begin(); it!=maps.end(); it++){
+            if(mapt.find(it->first)==mapt.end()) count += maps[it->first];
+            else if(mapt[it->first]<maps[it->first]) count += (maps[it->first]-mapt[it->first]);
+        }
+        for(auto it=mapt.begin(); it!=mapt.end(); it++){
+            if(maps.find(it->first)==maps.end()) count += mapt[it->first];
+            else if(maps[it->first]<mapt[it->first]) count += (mapt[it->first]-maps[it->first]);
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
