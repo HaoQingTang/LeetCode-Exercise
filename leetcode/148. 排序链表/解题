@@ -71,4 +71,152 @@ public:
 时间复杂度：O(n^2)
 空间复杂度：O(1)
 
-三：归并排序
+三：自顶向下的归并排序
+
+对链表自顶向下归并排序的过程如下。
+
+（1）找到链表的中点，以中点为分界，将链表拆分成两个子链表。寻找链表的中点可以使用快慢指针的做法，快指针每次移动2步，慢指针每次移动1步，当快指针到达链表末尾时，慢指针指向的链表节点
+即为链表的中点。
+（2）对两个子链表分别排序。
+（3）将两个排序后的子链表合并，得到完整的排序后的链表。
+
+上述过程可以通过递归实现。递归的终止条件是链表的节点个数小于或等于1，即当链表为空或者链表只包含1个节点时，不需要对链表进行拆分和排序。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        return sort(head, nullptr);
+    }
+
+    ListNode* sort(ListNode* head, ListNode* tail){
+        if(head==nullptr) return head;            //链表为空
+        if(head->next==tail){                     //链表只包含一个节点
+            head->next = nullptr;
+            return head;
+        }
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while(fast!=tail){
+            slow = slow->next;
+            fast = fast->next;
+            if(fast!=tail){
+                fast = fast->next;
+            }
+        }
+        ListNode* mid = slow;
+        ListNode* list1 = sort(head, mid);
+        ListNode* list2 = sort(mid, tail);
+        return merge(list1, list2);
+    }
+
+    ListNode* merge(ListNode* list1, ListNode* list2){
+        ListNode* dummy = new ListNode(0);
+        ListNode* cur = dummy;
+        while(list1 && list2){
+            if(list1->val<list2->val){
+                cur->next = list1;
+                list1 = list1->next;
+                cur = cur->next;
+            }
+            else{
+                cur->next = list2;
+                list2 = list2->next;
+                cur = cur->next;
+            }
+        }
+        cur->next = list1?list1:list2;
+        return dummy->next;
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(logn)
+
+四：自底向上的归并排序
+
+首先求得链表的长度length，然后将链表拆分成子链表进行合并。
+
+具体做法如下。
+用subLength 表示每次需要排序的子链表的长度，初始时subLength=1。
+每次将链表拆分成若干个长度为subLength 的子链表（最后一个子链表的长度可以小于subLength），按照每两个子链表一组进行合并，合并后即可得到若干个长度为subLength×2 的有序子链表（最后一个
+子链表的长度可以小于subLength×2）。
+将subLength 的值加倍，重复第 2 步，对更长的有序子链表进行合并操作，直到有序子链表的长度大于或等于length，整个链表排序完毕。
+
+
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (head == nullptr) {
+            return head;
+        }
+        int length = 0;
+        ListNode* node = head;
+        while (node != nullptr) {
+            length++;
+            node = node->next;
+        }
+        ListNode* dummyHead = new ListNode(0, head);
+        for (int subLength = 1; subLength < length; subLength <<= 1) {
+            ListNode* prev = dummyHead, *curr = dummyHead->next;
+            while (curr != nullptr) {
+                ListNode* head1 = curr;
+                for (int i = 1; i < subLength && curr->next != nullptr; i++) {
+                    curr = curr->next;
+                }
+                ListNode* head2 = curr->next;
+                curr->next = nullptr;
+                curr = head2;
+                for (int i = 1; i < subLength && curr != nullptr && curr->next != nullptr; i++) {
+                    curr = curr->next;
+                }
+                ListNode* next = nullptr;
+                if (curr != nullptr) {
+                    next = curr->next;
+                    curr->next = nullptr;
+                }
+                ListNode* merged = merge(head1, head2);
+                prev->next = merged;
+                while (prev->next != nullptr) {
+                    prev = prev->next;
+                }
+                curr = next;
+            }
+        }
+        return dummyHead->next;
+    }
+
+    ListNode* merge(ListNode* head1, ListNode* head2) {
+        ListNode* dummyHead = new ListNode(0);
+        ListNode* temp = dummyHead, *temp1 = head1, *temp2 = head2;
+        while (temp1 != nullptr && temp2 != nullptr) {
+            if (temp1->val <= temp2->val) {
+                temp->next = temp1;
+                temp1 = temp1->next;
+            } else {
+                temp->next = temp2;
+                temp2 = temp2->next;
+            }
+            temp = temp->next;
+        }
+        if (temp1 != nullptr) {
+            temp->next = temp1;
+        } else if (temp2 != nullptr) {
+            temp->next = temp2;
+        }
+        return dummyHead->next;
+    }
+};
+
+
+时间复杂度：O(nlogn)
+空间复杂度：O(1)
