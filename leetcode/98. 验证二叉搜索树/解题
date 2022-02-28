@@ -1,0 +1,71 @@
+【C++】
+
+一：递归
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isVaild(TreeNode*root, long lower, long bigger){
+        if(!root) return true;
+        if(root->val<=lower || root->val>=bigger) return false;
+        return isVaild(root->left,lower,root->val) && isVaild(root->right,root->val,bigger);
+    }
+    bool isValidBST(TreeNode* root) {
+        return isVaild(root,LONG_MIN,LONG_MAX);
+    }
+};
+
+时间复杂度 : O(n)，其中n为二叉树的节点个数。在递归调用的时候二叉树的每个节点最多被访问一次，因此时间复杂度为O(n)。
+空间复杂度 : O(n)，其中n为二叉树的节点个数。递归函数在递归过程中需要为每一层递归函数分配栈空间，所以这里需要额外的空间且该空间取决于递归的深度，即二叉树的高度。最坏情况下二叉树为一条链，
+树的高度为n，递归最深达到n层，故最坏情况下空间复杂度为O(n)。
+
+二：中序遍历
+
+二叉搜索树「中序遍历」得到的值构成的序列一定是升序的，这启示我们在中序遍历的时候实时检查当前节点的值是否大于前一个中序遍历到的节点的值即可。
+如果均大于说明这个序列是升序的，整棵树是二叉搜索树，否则不是。
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        stack<TreeNode*> stk;
+        long long int num = (long long)INT_MIN-1;
+        while(!stk.empty()||root!=nullptr){
+            while(root!=nullptr){
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            if(root->val<=num){
+                return false;
+            }
+            num = root->val;
+            root = root->right;
+        }
+        return true;
+    }
+};
+
+时间复杂度 : O(n)
+空间复杂度 : O(n)
