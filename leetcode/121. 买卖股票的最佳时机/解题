@@ -1,0 +1,40 @@
+【C++】
+
+一：暴力
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int maxval = 0;
+        for(int i=0; i<prices.size()-1; i++){
+            for(int j=i+1; j<prices.size(); j++){
+                int val = prices[j]-prices[i];
+                maxval = max(maxval, val);
+            }
+        }
+        return maxval;
+    }
+};
+
+时间复杂度：O(n^2)
+空间复杂度：O(1)
+
+二：一次遍历
+
+维护到当前位置的最小值
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int maxval = 0;
+        int minval = 10e4+1;
+        for(int price:prices){
+            maxval = max(maxval, price-minval);
+            minval = min(minval, price);
+        }
+        return maxval;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
