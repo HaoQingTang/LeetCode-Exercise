@@ -1,0 +1,76 @@
+【C++】
+
+一：动态规划
+
+dp[i][0]：第i天不持有股票
+dp[i][1]：第i天持有股票
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        vector<vector<int>> dp(prices.size()+1,vector<int>(2));
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for(int i=1; i<prices.size(); i++){
+            dp[i][0] = max(dp[i-1][0],dp[i-1][1]+prices[i]-fee);
+            dp[i][1] = max(dp[i-1][1],dp[i-1][0]-prices[i]);
+        }
+        return dp[prices.size()-1][0];
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：动态规划（空间优化）
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int dp0 = 0;
+        int dp1 = -prices[0];
+        for(int i=1; i<prices.size(); i++){
+            dp0 = max(dp0,dp1+prices[i]-fee);
+            dp1 = max(dp1,dp0-prices[i]);
+        }
+        return dp0;
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+三：贪心
+
+用buy表示在最大化收益的前提下，如果我们手上拥有一支股票，那么它的最低买入价格是多少。在初始时，buy的值为prices[0]加上手续费fee。那么当我们遍历到第i(i>0)天时：
+
+如果当前的股票价格prices[i] 加上手续费fee 小于buy，那么与其使用buy 的价格购买股票，我们不如prices[i]+fee 的价格购买股票，因此我们将buy 更新为prices[i]+fee；
+如果当前的股票价格prices[i] 大于buy，那么我们直接卖出股票并且获得prices[i]−buy 的收益。但实际上，我们此时卖出股票可能并不是全局最优的（例如下一天股票价格继续上升），
+因此我们可以提供一个反悔操作，看成当前手上拥有一支买入价格为prices[i] 的股票，将buy 更新为prices[i]。这样一来，如果下一天股票价格继续上升，我们会获得prices[i+1]−prices[i] 的收益，
+加上这一天prices[i]−buy 的收益，恰好就等于在这一天不进行任何操作，而在下一天卖出股票的收益；
+
+对于其余的情况，prices[i] 落在区间[buy−fee,buy] 内，它的价格没有低到我们放弃手上的股票去选择它，也没有高到我们可以通过卖出获得收益，因此我们不进行任何操作。
+
+上面的贪心思想可以浓缩成一句话，即当我们卖出一支股票时，我们就立即获得了以相同价格并且免除手续费买入一支股票的权利。在遍历完整个数组prices 之后之后，我们就得到了最大的总收益。
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int len = prices.size();
+        int ans = 0;
+        int buy = prices[0]+fee;
+        for(int i=1; i<len; i++){
+            if(prices[i]+fee<buy){
+                buy = prices[i]+fee;
+            }
+            else if(prices[i]>buy){
+                ans += prices[i]-buy;
+                buy = prices[i];
+            }
+        }
+        return ans;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
