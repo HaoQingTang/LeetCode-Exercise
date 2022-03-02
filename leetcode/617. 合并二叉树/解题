@@ -39,3 +39,90 @@ public:
 时间复杂度：O(min(m,n))，其中m和n分别是两个二叉树的节点个数。对两个二叉树同时进行深度优先搜索，只有当两个二叉树中的对应节点都不为空时才会对该节点进行显性合并操作，
 因此被访问到的节点数不会超过较小的二叉树的节点数。
 空间复杂度：O(min(m,n))，其中m和n分别是两个二叉树的节点个数。空间复杂度取决于递归调用的层数，递归调用的层数不会超过较小的二叉树的最大高度，最坏情况下，二叉树的高度等于节点数。
+
+二：bfs
+
+首先判断两个二叉树是否为空，如果两个二叉树都为空，则合并后的二叉树也为空，如果只有一个二叉树为空，则合并后的二叉树为另一个非空的二叉树。
+
+如果两个二叉树都不为空，则首先计算合并后的根节点的值，然后从合并后的二叉树与两个原始二叉树的根节点开始广度优先搜索，从根节点开始同时遍历每个二叉树，并将对应的节点进行合并。
+
+使用三个队列分别存储合并后的二叉树的节点以及两个原始二叉树的节点。初始时将每个二叉树的根节点分别加入相应的队列。每次从每个队列中取出一个节点，判断两个原始二叉树的节点的左右子节点
+是否为空。如果两个原始二叉树的当前节点中至少有一个节点的左子节点不为空，则合并后的二叉树的对应节点的左子节点也不为空。对于右子节点同理。
+
+如果合并后的二叉树的左子节点不为空，则需要根据两个原始二叉树的左子节点计算合并后的二叉树的左子节点以及整个左子树。考虑以下两种情况：
+
+如果两个原始二叉树的左子节点都不为空，则合并后的二叉树的左子节点的值为两个原始二叉树的左子节点的值之和，在创建合并后的二叉树的左子节点之后，将每个二叉树中的左子节点都加入相应的队列；
+如果两个原始二叉树的左子节点有一个为空，即有一个原始二叉树的左子树为空，则合并后的二叉树的左子树即为另一个原始二叉树的左子树，此时也不需要对非空左子树继续遍历，因此不需要将左子节点
+加入队列。
+
+对于右子节点和右子树，处理方法与左子节点和左子树相同。
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+
+    TreeNode* mergeTrees(TreeNode* root1, TreeNode* root2){
+        if(root1==nullptr&&root2==nullptr) return nullptr;
+        if(root1==nullptr&&root2!=nullptr) return root2;
+        if(root1!=nullptr&&root2==nullptr) return root1;
+        queue<TreeNode*> q1;
+        queue<TreeNode*> q2;
+        queue<TreeNode*> q;
+        TreeNode* root = new TreeNode(root1->val+root2->val);
+        TreeNode* ans = root;
+        q.push(root);
+        q1.push(root1);
+        q2.push(root2);
+        while(!q1.empty()&&!q2.empty()){
+            root = q.front();
+            root1 = q1.front();
+            root2 = q2.front();
+            q.pop();
+            q1.pop();
+            q2.pop();
+            TreeNode* left1 = root1->left, *left2 = root2->left;
+            TreeNode *right1 = root1->right, *right2 = root2->right;
+            if(left1!=nullptr&&left2!=nullptr){
+                TreeNode* Left = new TreeNode(left1->val+left2->val);
+                root->left = Left;
+                q.push(Left);
+                q1.push(left1);
+                q2.push(left2);
+            }
+            else if(left1!=nullptr&&left2==nullptr){
+                root->left = left1;
+            }
+            else{
+                root->left = left2;
+            }
+            if(right1!=nullptr&&right2!=nullptr){
+                TreeNode* Right = new TreeNode(right1->val+right2->val);
+                root->right = Right;
+                q.push(Right);
+                q1.push(right1);
+                q2.push(right2);
+            }
+            else if(right1!=nullptr&&right2==nullptr){
+                root->right = right1;
+            }
+            else{
+                root->right = right2;
+            }
+        }
+        return ans;
+    }
+};
+
+时间复杂度：O(min(m,n))，其中m和n分别是两个二叉树的节点个数。对两个二叉树同时进行广度优先搜索，只有当两个二叉树中的对应节点都不为空时才会访问到该节点，因此被访问到的节点数不会超过
+较小的二叉树的节点数。
+空间复杂度：O(min(m,n))，其中m和n分别是两个二叉树的节点个数。空间复杂度取决于队列中的元素个数，队列中的元素个数不会超过较小的二叉树的节点数。
