@@ -1,0 +1,89 @@
+【C++】
+
+一：bfs
+为了求出岛屿的数量，我们可以扫描整个二维网格。如果一个位置为1，则将其加入队列，开始进行广度优先搜索。在广度优先搜索的过程中，每个搜索到的1都会被重新标记为0。直到队列为空，搜索结束。
+
+最终岛屿的数量就是我们进行广度优先搜索的次数。
+
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int lenr = grid.size();           //行数
+        int lenc = grid[0].size();        //列数
+        int count = 0;
+        for(int r=0; r<lenr; r++){
+            for(int c=0; c<lenc; c++){
+                if(grid[r][c]=='1'){
+                    count += 1;
+                    grid[r][c] = '0';
+                    queue<pair<int, int>> q;
+                    q.push({r,c});
+                    while(!q.empty()){
+                        auto rc = q.front();
+                        q.pop();
+                        int R = rc.first;
+                        int C = rc.second;
+                        if(R-1>=0&&grid[R-1][C]=='1'){
+                            grid[R-1][C] = '0';
+                            q.push({R-1,C});
+                        }
+                        if(R+1<lenr&&grid[R+1][C]=='1'){
+                            grid[R+1][C] = '0';
+                            q.push({R+1,C});
+                        }
+                        if(C-1>=0&&grid[R][C-1]=='1'){
+                            grid[R][C-1] = '0';
+                            q.push({R,C-1});
+                        }
+                        if(C+1<lenc&&grid[R][C+1]=='1'){
+                            grid[R][C+1] = '0';
+                            q.push({R,C+1});
+                        }
+                    }
+                }  
+            }
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(MN)
+空间复杂度：O(min(M,N))，在最坏情况下，整个网格均为陆地，队列的大小可以达到min(M,N)。
+
+二：dfs
+可以将二维网格看成一个无向图，竖直或水平相邻的1之间有边相连。
+
+为了求出岛屿的数量，我们可以扫描整个二维网格。如果一个位置为1，则以其为起始节点开始进行深度优先搜索。在深度优先搜索的过程中，每个搜索到的1都会被重新标记为0。
+
+最终岛屿的数量就是我们进行深度优先搜索的次数。
+
+class Solution {
+public:
+    void dfs(vector<vector<char>>& grid, int r, int c){
+        grid[r][c]='0';
+        int lenr = grid.size();
+        int lenc = grid[0].size();
+        if(r-1>=0&&grid[r-1][c]=='1') dfs(grid, r-1, c);
+        if(r+1<lenr&&grid[r+1][c]=='1') dfs(grid, r+1, c);
+        if(c-1>=0&&grid[r][c-1]=='1') dfs(grid, r, c-1);
+        if(c+1<lenc&&grid[r][c+1]=='1') dfs(grid, r, c+1);
+    }
+
+    int numIslands(vector<vector<char>>& grid) {
+        int lenr = grid.size();           //行数
+        int lenc = grid[0].size();        //列数
+        int count = 0;
+        for(int r=0; r<lenr; r++){
+            for(int c=0; c<lenc; c++){
+                if(grid[r][c]=='1'){
+                    count += 1;
+                    dfs(grid, r, c);
+                }  
+            }
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(MN)
+空间复杂度：O(MN)
