@@ -1,0 +1,97 @@
+【C++】
+
+一：递归
+
+终止条件：
+当越过叶节点，则直接返回null ；
+当 root等于p或q ，则直接返回root；
+
+递推工作：
+三种情况；
+当search(root->left,p)和search(root->left,q)都为正，证明两个节点都在左子树，继续递归左子树
+当search(root->right,p)和search(root->right,q)都为正，证明两个节点都在右子树，继续递归右子树
+否则，两个节点分别在左右子树两侧，直接返回root
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool search(TreeNode* root, TreeNode* node){
+        if(root==NULL) return false;
+        else if(root->val==node->val) return true;
+        else return search(root->left, node)||search(root->right, node);
+    }
+
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if(root==NULL) return NULL;
+        if(root->val==p->val || root->val==q->val) return root;
+        //两个节点都在左子树，因此继续在左子树找
+        if(search(root->left,p)&&search(root->left,q)){
+            return lowestCommonAncestor(root->left, p, q);
+        } 
+        //两个节点都在右子树，因此继续在右子树找
+        else if(search(root->right,p)&&search(root->right,q)){
+            return lowestCommonAncestor(root->right, p, q);
+        }
+        //两个节点分别在左右子树两边
+        else return root;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：哈希表存储父节点
+1.从根节点开始遍历整棵二叉树，用哈希表记录每个节点的父节点指针。
+2.从 p 节点开始不断往它的祖先移动，并用数据结构记录已经访问过的祖先节点。
+3.同样，我们再从 q 节点开始不断往它的祖先移动，如果有祖先已经被访问过，即意味着这是 p 和 q 的深度最深的公共祖先，即 LCA 节点。
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    unordered_map<int, TreeNode*> fa;         //存储所有的父节点
+    unordered_map<int, bool> vis;             //判断该父节点是否已遍历
+    void dfs(TreeNode* root){
+        if(root->left!=NULL){
+            fa[root->left->val] = root;
+            dfs(root->left);
+        }
+        if(root->right!=NULL){
+            fa[root->right->val] = root;
+            dfs(root->right);
+        }
+    }
+
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        fa[root->val] = NULL;
+        dfs(root);
+        while(p!=NULL){
+            vis[p->val] = true;
+            p = fa[p->val];          //往上找父节点
+        }
+        while(q!=NULL){
+            if(vis[q->val]) return q;
+            q = fa[q->val];
+        }
+        return NULL;
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(n)
