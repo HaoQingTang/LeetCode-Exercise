@@ -1,0 +1,34 @@
+1.从数列中挑出一个元素，称为"基准"（pivot），
+2.重新排序数列，所有比基准值小的元素摆放在基准前面，所有比基准值大的元素摆在基准后面（相同的数可以到任何一边）。
+在这个分区结束之后，该基准就处于数列的中间位置。这个称为分区（partition）操作。
+3.递归地（recursively）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+
+
+（升序）
+public static void quickSort(int[] arr){
+    qsort(arr, 0, arr.length-1);
+}
+private static void qsort(int[] arr, int low, int high){
+    if (low >= high)
+        return;
+    int pivot = partition(arr, low, high);        //将数组分为两部分
+    qsort(arr, low, pivot-1);                   //递归排序左子数组
+    qsort(arr, pivot+1, high);                  //递归排序右子数组
+}
+private static int partition(int[] arr, int low, int high){
+    int pivot = arr[low];     //基准
+    while (low < high){
+        while (low < high && arr[high] >= pivot) --high;
+        arr[low]=arr[high];             //交换比基准大的记录到左端
+        while (low < high && arr[low] <= pivot) ++low;
+        arr[high] = arr[low];           //交换比基准小的记录到右端
+    }
+    //扫描完成，基准到位
+    arr[low] = pivot;
+    //返回的是基准的位置
+    return low;
+}
+
+快速排序并不是稳定的。这是因为我们无法保证相等的数据按顺序被扫描到和按顺序存放。
+时间复杂度：最坏O(n^2)，平均O(nlogn)
+空间复杂度：O(logn)
