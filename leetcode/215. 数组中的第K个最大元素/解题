@@ -1,0 +1,93 @@
+【C++】
+
+一：系统带的sort()
+
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        sort(nums.begin(),nums.end());
+        return nums[nums.size()-k];
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(1)
+
+二：快速排序
+(1)左右互换填坑
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        int l = 0;
+        int r = nums.size()-1;
+        while(true){
+            int index = partition(nums, l, r);
+            if(index == k-1){
+                return nums[index];
+            }
+            else if(index>k-1){
+                r = index-1;
+            }
+            else l = index+1;
+        }
+    }
+    int partition(vector<int>& nums, int start, int end){
+        int l = start;
+        int r = end;
+        int cur = nums[start];               //基准数
+        while(l<r){
+            while(l<r && nums[r]<=cur){      //降序
+                r--;
+            }
+            if(l<r){                         //l,r互换
+                nums[l] = nums[r];
+            }
+            while(l<r && nums[l]>=cur){
+                l++;
+            }
+            if(l<r){
+                nums[r] = nums[l];
+            }
+        }
+        nums[l] = cur;
+        return l;
+    }
+};
+
+(2)直接左右互换
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        int l = 0;
+        int r = nums.size()-1;
+        while(true){
+            int index = partition(nums, l, r);
+            if(index == k-1){
+                return nums[index];
+            }
+            else if(index>k-1){
+                r = index-1;
+            }
+            else l = index+1;
+        }
+    }
+    int partition(vector<int>& nums, int start, int end){
+        int l = start;
+        int r = end;
+        int cur = nums[start];               //基准数
+        while(l<r){
+            while(l<r && nums[r]<=cur){      //降序
+                r--;
+            }
+            while(l<r && nums[l]>=cur){
+                l++;
+            }
+            swap(nums[l],nums[r]);
+        }
+        swap(nums[l],nums[start]);
+        return l;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(logn)
