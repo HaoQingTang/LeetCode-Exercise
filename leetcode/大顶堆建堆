@@ -29,3 +29,10 @@ public:
     }
 
 };
+
+删除：
+        for (int i = nums.size() - 1; i >= nums.size() - k + 1; --i) {       //删除K-1次
+            swap(nums[0], nums[i]);                     //nums[0]最大，nums[i]最小
+            --heapSize;
+            maxHeapify(nums, 0, heapSize);
+        }
