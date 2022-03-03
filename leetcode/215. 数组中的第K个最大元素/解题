@@ -91,3 +91,65 @@ public:
 
 时间复杂度：O(n)
 空间复杂度：O(logn)
+
+三：大顶堆（调库）
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        priority_queue<int> pq;
+        for(int num:nums){
+            pq.push(num);
+        }
+        int i = k-1;
+        while(i--){
+            pq.pop();
+        }
+        return pq.top();
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+四：自建大顶堆
+
+class Solution {
+public:
+    void modifyMaxHeap(vector<int>& nums, int index, int HeapSize){
+        int l = 2*index+1;
+        int r = 2*index+2;
+        int large = index;
+        if(l<HeapSize && nums[l]>nums[large]){
+            large = l;
+        }
+        if(r<HeapSize && nums[r]>nums[large]){
+            large = r;
+        }
+        if(index!=large){
+            swap(nums[index],nums[large]);
+            modifyMaxHeap(nums, large, HeapSize);
+        }
+    }
+
+    void buildMaxHeap(vector<int>& nums, int HeapSize){
+        for(int i=HeapSize/2; i>=0; i--){
+            modifyMaxHeap(nums, i, HeapSize);
+        }
+    }
+
+    int findKthLargest(vector<int>& nums, int k) {
+        int len = nums.size();
+        int HeapSize = len;
+        buildMaxHeap(nums, HeapSize);
+        for(int i=len-1; i>len-k; i--){
+            swap(nums[0], nums[i]);
+            HeapSize --;
+            modifyMaxHeap(nums,0,HeapSize);
+        }
+        return nums[0];
+    }
+};
+
+时间复杂度：O(nlogn)，建堆的时间代价是O(n)，删除的总代价是O(klogn)，因为k<n，故渐进时间复杂为O(n+klogn)=O(nlogn)。
+空间复杂度：O(logn)，即递归使用栈空间的空间代价。
