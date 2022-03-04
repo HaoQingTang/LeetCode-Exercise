@@ -1,0 +1,71 @@
+【C++】
+
+一：动态规划
+
+首先考虑最简单的情况。如果只有一间房屋，则偷窃该房屋，可以偷窃到最高总金额。如果只有两间房屋，则由于两间房屋相邻，不能同时偷窃，只能偷窃其中的一间房屋，因此选择其中金额较高的房屋进
+行偷窃，可以偷窃到最高总金额。
+
+注意到当房屋数量不超过两间时，最多只能偷窃一间房屋，因此不需要考虑首尾相连的问题。如果房屋数量大于两间，就必须考虑首尾相连的问题，第一间房屋和最后一间房屋不能同时偷窃。
+
+如何才能保证第一间房屋和最后一间房屋不同时偷窃呢？
+如果偷窃了第一间房屋，则不能偷窃最后一间房屋，因此偷窃房屋的范围是第一间房屋到最后第二间房屋；
+如果偷窃了最后一间房屋，则不能偷窃第一间房屋，因此偷窃房屋的范围是第二间房屋到最后一间房屋。
+
+假设数组nums的长度为n。如果不偷窃最后一间房屋，则偷窃房屋的下标范围是[0,n−2]；如果不偷窃第一间房屋，则偷窃房屋的下标范围是[1,n−1]。在
+确定偷窃房屋的下标范围之后，即可用第 198 题的方法解决。对于两段下标范围分别计算可以偷窃到的最高总金额，其中的最大值即为在n间房屋中可以偷窃到的最高总金额。
+
+class Solution {
+public:
+    int choose(vector<int>& nums, int start, int end){
+        vector<int> dp(nums.size());
+        if(start==0){
+            dp[0] = nums[0];
+            dp[1] = max(nums[0],nums[1]);
+        }
+        else{
+            dp[0] = 0;
+            dp[1] = nums[1];
+        }
+        int maxval = max(dp[0], dp[1]);
+        for(int i=2; i<=end; i++){
+            dp[i] = max(dp[i-2]+nums[i], dp[i-1]);
+            maxval = max(maxval, dp[i]);
+        }
+        return maxval;
+    }
+    int rob(vector<int>& nums) {
+        int len = nums.size();
+        if(len==1) return nums[0];
+        if(len==2) return max(nums[0],nums[1]);
+        return max(choose(nums,0,len-2),choose(nums,1,len-1));
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+空间优化：
+class Solution {
+public:
+    int choose(vector<int>& nums, int start, int end){
+        int first = nums[start];
+        int second = max(nums[start], nums[start+1]);
+        int maxval = max(first, second);
+        for(int i=start+2; i<=end; i++){
+            int tmp = second;
+            second = max(first+nums[i], second);
+            maxval = max(maxval, second);
+            first = tmp;
+        }
+        return maxval;
+    }
+    int rob(vector<int>& nums) {
+        int len = nums.size();
+        if(len==1) return nums[0];
+        if(len==2) return max(nums[0],nums[1]);
+        return max(choose(nums,0,len-2),choose(nums,1,len-1));
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
