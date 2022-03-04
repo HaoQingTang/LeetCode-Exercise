@@ -1,0 +1,48 @@
+【C++】
+
+一：动态规划
+
+dp[i]：偷第i家获得的收益
+dp[0] = nums[0]
+dp[1] = max(nums[0], nums[1])
+dp[i] = max(dp[i-1], dp[i-2]+nums[i])
+
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        if(nums.size()==1) return nums[0];
+        vector<int> dp(nums.size());
+        dp[0] = nums[0];
+        dp[1] = max(nums[0],nums[1]);
+        int maxval = max(dp[0], dp[1]);
+        for(int i=2; i<nums.size(); i++){
+            dp[i] = max(dp[i-2]+nums[i], dp[i-1]);
+            maxval = max(maxval, dp[i]);
+        }
+        return maxval;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+空间优化：
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        if(nums.size()==1) return nums[0];
+        int dp0 = nums[0];
+        int dp1 = max(nums[0],nums[1]);
+        int maxval = max(dp0, dp1);
+        for(int i=2; i<nums.size(); i++){
+            int dp = max(dp0+nums[i], dp1);
+            maxval = max(maxval, dp);
+            dp0 = dp1;
+            dp1 = dp;
+        }
+        return maxval;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
