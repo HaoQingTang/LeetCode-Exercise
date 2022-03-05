@@ -1,0 +1,65 @@
+【C++】
+
+一：前缀和+二分查找
+
+1. 计算每个位置的前缀和，方便后面计算小于等于value的和。
+2. 使用二分法，l=0，r=arr的最大值，找到arr中小于mid的第一个位置，将大于等于mid的所有数值变为mid，计算和。
+3. 若和小于target，记录mid（ans），更新l为mid+1；否则，更新r为mid-1。
+4. 计算value为ans和ans+1时，哪个的和最接近target。
+
+我们首先考虑题目的一个简化版本：我们需要找到value，使得数组的和最接近target且不大于target。可以发现，在[0,max(arr)]（即方法一中确定的上下界）的范围之内，随着value 的增大，
+数组的和是严格单调递增的。这里「严格」的意思是，不存在两个不同的 value 值，它们对应的数组的和相等。这样一来，一定存在唯一的一个 value 值，使得数组的和最接近且不大于 target。
+并且由于严格单调递增的性质，我们可以通过二分查找的方法，找到这个 value 值，记为 value_lower。
+
+同样地，我们考虑题目的另一个简化版本：我们需要找到一个 value，使得数组的和最接近 target 且大于 target。我们也可以通过二分查找的方法，找到这个 value 值，记为 value_upper。
+
+显然 value 值就是 value_lower 和 value_upper 中的一个，我们只需要比较这两个值对应的数组的和与 target 的差，就能确定最终的答案。这样一来，我们通过两次二分查找，就可以找出 value 值，
+在每一次二分查找中，我们使用和方法一中相同的查找方法，快速地求出每个 value 值对应的数组的和。算法从整体上来看，是外层二分查找中嵌套了一个内层二分查找。
+
+那么这个方法还有进一步优化的余地吗？仔细思考一下 value_lower 与 value_upper 的定义，前者最接近且不大于 target，后者最接近且大于 target。
+由于数组的和随着 value 的增大是严格单调递增的，所以 value_upper 的值一定就是 value_lower + 1。因此我们只需要进行一次外层二分查找得到 value_lower，并直接通过 value_lower + 1 
+计算出 value_upper 的值就行了。这样我们就减少了一次外层二分查找，虽然时间复杂度没有变化，但降低了常数。
+
+class Solution {
+public:
+    int findBestValue(vector<int>& arr, int target) {
+        sort(arr.begin(),arr.end());
+        int len = arr.size();
+        vector<int> prefix(len);
+        prefix[0] = arr[0];
+        for(int i=1; i<len; i++){
+            prefix[i] = prefix[i-1]+arr[i];          //计算前缀和
+        }
+        int l = 0, r = arr[len-1];
+        int ans = 0;
+        while(l<=r){
+            int mid = (l+r)/2;
+            int value = sum(arr, prefix, mid);
+            if(value<target){
+                ans = mid;        //和最接近且不大于 target
+                l = mid+1;
+            }
+            else r = mid-1;
+        }
+        int result1 = sum(arr, prefix, ans);
+        int result2 = sum(arr, prefix, ans+1);
+        if(abs(result1-target)<=abs(result2-target)) return ans;
+        else return ans+1;
+    }
+    int sum(vector<int>& arr, vector<int>& prefix, int num){
+        int len = arr.size();
+        int index = 0;
+        int value = 0;
+        while(arr[index]<num && index<=arr.size()-1){
+            index++;
+        }
+        if(index==0){
+            value = num*len;
+        }
+        else value = prefix[index-1]+num*(len-index);
+        return value;
+    }
+};
+
+时间复杂度：O(NlogN)，其中N是数组arr的长度。排序需要的时间复杂度为O(NlogN)，外层二分查找的时间复杂度为O(logC)，内层二分查找的时间复杂度为O(logN)，它们的乘积在数量级上小于O(NlogN)。
+空间复杂度：O(N)
