@@ -1,0 +1,75 @@
+【C++】
+
+一：二分+抽屉原理
+
+重点理解：这个问题使用「二分查找」是在数组 [1, 2,.., n] 中查找一个整数，而 并非在输入数组数组中查找一个整数。
+
+二分查找的思路是先猜一个数（有效范围 [left..right] 里位于中间的数 mid），然后统计原始数组中 小于等于 mid 的元素的个数 cnt：
+如果 cnt 严格大于 mid。根据抽屉原理，重复元素就在区间 [left..mid] 里；
+否则，重复元素就在区间 [mid + 1..right] 里。
+
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        int len = nums.size();
+        int l = 0, r = len-1;
+        int ans = 0;
+        while(l<=r){
+            int mid = (l+r)/2;
+            int count = 0;
+            for(int i=0; i<len; i++){
+                if(nums[i]<=mid) count++;
+            }
+            if(count<=mid) l = mid+1;    //证明重复的数字不在[l，mid]之间，mid肯定不会是重复的数
+            else{
+                ans = mid;
+                r = mid-1;
+            }
+        }
+        return ans;
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(1)
+
+二分查找技巧：一定要找准对什么东西进行二分查找，并确定边界
+
+二：快慢指针
+
+对nums 数组建图，每个位置i连一条i→nums[i] 的边。由于存在的重复的数字target，因此target 这个位置一定有起码两条指向它的边，因此整张图一定存在环，且我们要找到的target 就是这个环的
+入口，那么整个问题就等价于 142. 环形链表 II。
+
+我们先设置慢指针slow 和快指针fast，慢指针每次走一步，快指针每次走两步，根据「Floyd 判圈算法」两个指针在有环的情况下一定会相遇，此时我们再将slow 放置起点0，两个指针每次同时移动一
+步，相遇的点就是答案。
+
+综上
+1.数组中有一个重复的整数 <==> 链表中存在环
+2.找到数组中的重复整数 <==> 找到链表的环入口
+
+至此，问题转换为 142 题。那么针对此题，快、慢指针该如何走呢。根据上述数组转链表的映射关系，可推出
+142 题中慢指针走一步 slow = slow.next ==> 本题 slow = nums[slow]
+142 题中快指针走两步 fast = fast.next.next ==> 本题 fast = nums[nums[fast]]
+
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        int slow = 0, fast = 0;
+        slow = nums[slow];
+        fast = nums[nums[fast]];
+        while(slow!=fast){
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        }
+        slow = 0;
+        while(slow!=fast){
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow;
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(1)
