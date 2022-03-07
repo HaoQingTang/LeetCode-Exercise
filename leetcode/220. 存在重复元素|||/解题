@@ -1,0 +1,67 @@
+【C++】
+
+一：直接双指针
+
+超出时间限制（AC 51/53）
+
+class Solution {
+public:
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+        int len = nums.size();
+        if(len<2) return false;
+        for(int i=0; i<len-1; i++){
+            for(int j=i+1; j<=i+k && j<len; j++){
+                long int cha = (long int)nums[i]-(long int)nums[j];
+                if(abs(cha)<=(long int)t && abs(i-j)<=k) return true;
+            }
+        }
+        return false;
+    }
+};
+
+时间复杂度：O(nk)
+空间复杂度：O(1)
+
+二：哈希表+滑动窗口
+
+对于序列中每一个元素x左侧的至多k个元素，如果这k个元素中存在一个元素落在区间[x−t,x+t]中，我们就找到了一对符合条件的元素。注意到对于两个相邻的元素，它们各自的左侧的k个元素中有k−1 个
+是重合的。于是我们可以使用滑动窗口的思路，维护一个大小为k的滑动窗口，每次遍历到元素x时，滑动窗口中包含元素x前面的最多k个元素，我们检查窗口中是否存在元素落在区间[x−t,x+t] 中即可。
+
+如果使用队列维护滑动窗口内的元素，由于元素是无序的，我们只能对于每个元素都遍历一次队列来检查是否有元素符合条件。如果数组的长度为n，则使用队列的时间复杂度为O(nk)，会超出时间限制。
+
+因此我们希望能够找到一个数据结构维护滑动窗口内的元素，该数据结构需要满足以下操作：
+
+支持添加和删除指定元素的操作，否则我们无法维护滑动窗口；
+
+内部元素有序，支持二分查找的操作，这样我们可以快速判断滑动窗口中是否存在元素满足条件，具体而言，对于元素x，当我们希望判断滑动窗口中是否存在某个数y落在区间[x−t,x+t] 中，只需要判断
+滑动窗口中所有大于等于x−t 的元素中的最小元素是否小于等于x+t 即可。
+
+我们可以使用有序集合来支持这些操作。
+
+实现方面，我们在有序集合中查找大于等于x−t的最小的元素y，如果y存在，且y≤x+t，我们就找到了一对符合条件的元素。完成检查后，我们将x插入到有序集合中，如果有序集合中元素数量超过了k，
+我们将有序集合中最早被插入的元素删除即可。
+
+注意
+如果当前有序集合中存在相同元素，那么此时程序将直接返回 true。因此本题中的有序集合无需处理相同元素的情况。
+为防止整型 int 溢出，我们既可以使用长整型 long，也可以对查找区间[x−t,x+t] 进行限制，使其落在int 范围内。
+
+class Solution {
+public:
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+        int len = nums.size();
+        if(len<2) return false;
+        set<int> setk;
+        for(int i=0; i<len; i++){
+            auto iter = setk.lower_bound(max(nums[i],INT_MIN+t)-t);    //在哈希表中找第一个大于等于x-t的元素
+            if(iter!=setk.end() && (min(nums[i], INT_MAX-t)+t)>=*iter) return true;  //找到并且小于等于x+t
+            setk.insert(nums[i]);
+            if(i>=k){
+                setk.erase(nums[i-k]);              //维护滑动窗口的大小始终为k
+            }
+        }
+        return false;
+    }
+};
+
+时间复杂度：O(nlog(min(n,k)))，其中n是给定数组的长度。每个元素至多被插入有序集合和从有序集合中删除一次，每次操作时间复杂度均为O(log(min(n,k))。
+空间复杂度：O(min(n,k))，其中n 是给定数组的长度。有序集合中至多包含min(n,k+1) 个元素。
