@@ -65,3 +65,48 @@ public:
 
 时间复杂度：O(nlog(min(n,k)))，其中n是给定数组的长度。每个元素至多被插入有序集合和从有序集合中删除一次，每次操作时间复杂度均为O(log(min(n,k))。
 空间复杂度：O(min(n,k))，其中n 是给定数组的长度。有序集合中至多包含min(n,k+1) 个元素。
+
+三：桶排序
+
+按照元素的大小进行分桶，维护一个滑动窗口内的元素对应的元素。
+
+对于元素x，其影响的区间为[x−t,x+t]。于是我们可以设定桶的大小为t+1。如果两个元素同属一个桶，那么这两个元素必然符合条件。如果两个元素属于相邻桶，那么我们需要校验这两个元素是否差值
+不超过t。如果两个元素既不属于同一个桶，也不属于相邻桶，那么这两个元素必然不符合条件。
+
+具体地，我们遍历该序列，假设当前遍历到元素x，那么我们首先检查x所属于的桶是否已经存在元素，如果存在，那么我们就找到了一对符合条件的元素，否则我们继续检查两个相邻的桶内是否存在符合
+条件的元素。
+
+实现方面，我们将int 范围内的每一个整数x表示为x=(t+1)×a+b(0≤b≤t) 的形式，这样x即归属于编号为a的桶。因为一个桶内至多只会有一个元素，所以我们使用哈希表实现即可。
+
+class Solution {
+public:
+    int getID(int x, long w) {
+        return x < 0 ? (x + 1ll) / w - 1 : x / w;             //找对应的桶序号
+    }
+
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+        unordered_map<int, int> mp;
+        int n = nums.size();
+        for (int i = 0; i < n; i++) {
+            long x = nums[i];
+            int id = getID(x, t + 1ll);
+            if (mp.count(id)) {
+                return true;
+            }
+            if (mp.count(id - 1) && abs(x - mp[id - 1]) <= t) {
+                return true;
+            }
+            if (mp.count(id + 1) && abs(x - mp[id + 1]) <= t) {
+                return true;
+            }
+            mp[id] = x;
+            if (i >= k) {
+                mp.erase(getID(nums[i - k], t + 1ll));
+            }
+        }
+        return false;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(min(n,k))，其中n是给定数组的长度。哈希表中至多包含min(n,k+1) 个元素。
