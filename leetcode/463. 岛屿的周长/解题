@@ -1,0 +1,32 @@
+【C++】
+
+一：dfs遍历
+
+每当在 DFS 遍历中，从一个岛屿方格走向一个非岛屿方格（超界或海洋），就将周长加 1。走向已遍历的陆地，返回0。
+
+class Solution {
+public:
+    int dfs(vector<vector<int>>& grid, int r, int c){
+        if(!(0<=r && r<grid.size()&& 0<=c && c<grid[0].size())) return 1;
+        if(grid[r][c]==0) return 1;
+        if(grid[r][c]==2) return 0;         //2代表已经遍历过的陆地
+        grid[r][c] = 2;
+        return dfs(grid, r-1, c)+dfs(grid, r+1, c)+dfs(grid, r, c-1)+dfs(grid, r, c+1);
+    }
+    int islandPerimeter(vector<vector<int>>& grid) {
+        int lenr = grid.size();
+        int lenc = grid[0].size();
+        int count = 0;
+        for(int i=0; i<lenr; i++){
+            for(int j=0; j<lenc; j++){
+                if(grid[i][j]==1){
+                    count  += dfs(grid, i, j);
+                }
+            }
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(nm)，其中n为网格的高度，m为网格的宽度。每个格子至多会被遍历一次，因此总时间复杂度为O(nm)。
+空间复杂度：O(nm)。深度优先搜索复杂度取决于递归的栈空间，而栈空间最坏情况下会达到O(nm)。
