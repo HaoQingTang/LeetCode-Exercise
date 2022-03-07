@@ -1,0 +1,29 @@
+【C++】
+
+一：排序，模拟
+
+将timePoints排序后，最小时间差必然出现在timePoints 的两个相邻时间，或者timePoints 的两个首尾时间中。因此排序后遍历一遍timePoints 即可得到最小时间差。
+
+class Solution {
+public:
+    int getminute(string t){
+        int min = ((t[0]-'0')*10+(t[1]-'0'))*60+(t[3]-'0')*10+(t[4]-'0');
+        return min;
+    }
+    int findMinDifference(vector<string>& timePoints) {
+        sort(timePoints.begin(),timePoints.end());
+        int min0 = getminute(timePoints[0]);
+        int start = min0;
+        int minval = INT_MAX;
+        for(int i=1; i<timePoints.size(); i++){
+            int minute = getminute(timePoints[i]);
+            minval = min(minval, minute-min0);
+            min0 = minute;
+        }
+        minval = min(minval, start+1440-min0);            //比较首尾时间差，一天24*60分钟
+        return minval;
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(n)  排序需要空间
