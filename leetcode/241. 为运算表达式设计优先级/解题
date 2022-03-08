@@ -1,0 +1,39 @@
+【C++】
+
+一：分治
+
+遇到算符就把字符串分为算符左边和算符右边分别计算。
+
+class Solution {
+public:
+    vector<int> diffWaysToCompute(string expression) {
+        vector<int> result;
+        int len = expression.size();
+        int num = 0;
+        int index = 0;
+        while(index<len&&isdigit(expression[index])){                   //如果字符串全是数字，直接输出
+            num = num*10+(expression[index]-'0');
+            index++;
+        }
+        if(index==len){
+            result.push_back(num);
+            return result;
+        }
+        for(int i=0; i<len; i++){
+            if(expression[i]=='+'||expression[i]=='-' || expression[i]=='*'){
+                vector<int> left = diffWaysToCompute(expression.substr(0,i));      //按算符分为左右两边
+                vector<int> right = diffWaysToCompute(expression.substr(i+1,len-i-1));
+                for(int l:left){
+                    for(int r:right){
+                        int val = 0;
+                        if(expression[i]=='+') val = l+r;
+                        else if(expression[i]=='-') val = l-r;
+                        else val = l*r;
+                        result.push_back(val);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
