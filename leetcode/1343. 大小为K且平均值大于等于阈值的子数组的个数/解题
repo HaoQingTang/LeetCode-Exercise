@@ -1,0 +1,51 @@
+【C++】
+
+一：滑动窗口
+
+维护一个大小为K的滑动窗口
+
+class Solution {
+public:
+    int numOfSubarrays(vector<int>& arr, int k, int threshold) {
+        int len = arr.size();
+        int count = 0;
+        int thres = k*threshold;
+        queue<int> q;
+        int sum = 0;
+        for(int i=0; i<len; i++){
+            q.push(arr[i]);
+            sum += arr[i];
+            if(q.size()==k){
+                if(sum >= thres) count++;
+                int num = q.front();
+                sum -= num;
+                q.pop();
+            }
+        }
+        return count;
+    }
+};
+
+空间复杂度：O(k)
+
+class Solution {
+public:
+    int numOfSubarrays(vector<int>& arr, int k, int threshold) {
+        int len = arr.size();
+        int count = 0;
+        int thres = k*threshold;
+        int sum = 0;
+        for(int i=0; i<k; i++){
+            sum += arr[i];
+        }
+        if(sum>=thres) count++;
+        for(int i=k; i<len; i++){
+            sum = sum-arr[i-k]+arr[i];
+            if(sum>=thres) count++;
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
