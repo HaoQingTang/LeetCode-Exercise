@@ -1,0 +1,24 @@
+【C++】
+
+一：数学
+
+根据丑数的定义，0和负整数一定不是丑数。
+
+当n>0时，若n是丑数，则n可以写成 n = 2^a*3^b*5^c的形式，其中a,b,c 都是非负整数。特别地，当a,b,c 都是0时，n=1。
+
+为判断n是否满足上述形式，可以对n反复除以2,3,5，直到n不再包含质因数2,3,5。若剩下的数等于1，则说明n不包含其他质因数，是丑数；否则，说明n包含其他质因数，不是丑数。
+
+class Solution {
+public:
+    bool isUgly(int n) {
+        if(n<=0) return false;
+        while(n%2==0) n /= 2;
+        while(n%3==0) n /= 3;
+        while(n%5==0) n /= 5;
+        if(n==1) return true;
+        else return false;
+    }
+};
+
+时间复杂度：O(logn)
+空间复杂度：O(1)
