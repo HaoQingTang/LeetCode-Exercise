@@ -1,0 +1,51 @@
+【C++】
+
+一：模拟
+
+直观来说我们只需维护两个链表small和large 即可，small 链表按顺序存储所有小于x的节点，large链表按顺序存储所有大于等于x的节点。遍历完原链表后，我们只要将small 链表尾节点指向large 链表
+的头节点即能完成对链表的分隔。
+
+为了实现上述思路，我们设smallHead 和largeHead分别为两个链表的哑节点，即它们的next 指针指向链表的头节点，这样做的目的是为了更方便地处理头节点为空的边界条件。同时设small和large节点指向
+当前链表的末尾节点。开始时smallHead=small,largeHead=large。随后，从前往后遍历链表，判断当前链表的节点值是否小于x，如果小于就将small 的next 指针指向该节点，否则将large 的next 指针指向
+该节点。
+
+遍历结束后，我们将large的next指针置空，这是因为当前节点复用的是原链表的节点，而其next 指针可能指向一个小于x的节点，我们需要切断这个引用。同时将small的next 指针指向largeHead的next指
+针指向的节点，即真正意义上的large 链表的头节点。最后返回smallHead的next 指针即为我们要求的答案。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* partition(ListNode* head, int x) {
+        if(!head) return nullptr;
+        ListNode* small = new ListNode(0,head);
+        ListNode* smallHead = small;
+        ListNode* large = new ListNode(0, head);
+        ListNode* largeHead = large;               //分别把小于x的节点和大于等于x的节点连接起来
+        while(head){
+            if(head->val<x){
+                small->next = head;
+                small = small->next;
+            }
+            else{
+                large->next = head;
+                large = large->next;
+            }
+            head = head->next;
+        }
+        large->next = nullptr;
+        small->next = largeHead->next;
+        return smallHead->next;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
