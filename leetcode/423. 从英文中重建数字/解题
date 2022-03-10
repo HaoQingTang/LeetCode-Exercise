@@ -1,0 +1,36 @@
+【C++】
+
+一：哈希表
+
+找规律，找每个子母和数字对应的关系
+
+class Solution {
+public:
+    string originalDigits(string s) {
+        unordered_map<char, int> map;
+        for(char ch:s){
+            map[ch]++;
+        }
+        string result = "";
+        vector<int> num(10);
+        num[0] = map['z'];
+        num[2] = map['w'];
+        num[4] = map['u'];
+        num[6] = map['x'];
+        num[8] = map['g'];
+        num[3] = map['h']-num[8];
+        num[5] = map['f']-num[4];
+        num[7] = map['s']-num[6];
+        num[1] = map['o']-num[0]-num[2]-num[4];
+        num[9] = map['i']-num[5]-num[6]-num[8];
+        for(int i=0; i<=9; i++){
+            if(num[i]!=0){
+                while(num[i]--) result += string(1,(i+'0'));
+            }
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(|s|)，其中 |s|是字符串s的长度。
+空间复杂度：O(∣Σ∣)，其中Σ 表示字符集，∣Σ∣表示字符集的大小，在本题中Σ 为所有在0∼9 中出现的英文字母。
