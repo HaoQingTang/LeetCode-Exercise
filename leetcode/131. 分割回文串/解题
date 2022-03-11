@@ -1,0 +1,95 @@
+【C++】
+
+一：回溯+动态规划
+
+假设我们当前搜索到字符串的第i个字符，且s[0..i−1]位置的所有字符已经被分割成若干个回文串，并且分割结果被放入了答案数组ans中，那么我们就需要枚举下一个回文串的右边界j，使得s[i..j]是一
+个回文串。
+因此，我们可以从i开始，从小到大依次枚举j。对于当前枚举的j值，我们使用双指针的方法判断s[i..j]是否为回文串：如果s[i..j]是回文串，那么就将其加入答案数组ans中，并以j+1作为新的i进行下
+一层搜索，并在未来的回溯时将s[i..j] 从ans中移除。
+
+如果我们已经搜索完了字符串的最后一个字符，那么就找到了一种满足要求的分割方法。
+
+在判断s[i..j] 是否为回文串时，常规的方法是使用双指针分别指向i和j，每次判断两个指针指向的字符是否相同，直到两个指针相遇。然而这种方法会产生重复计算，因此使用动态规划。
+f[i][j] = true,  i>=j
+f[i][j] = f[i+1][j-1] && (s[i]==s[j]),  i<j
+
+class Solution {
+public:
+    
+    void dfs(vector<vector<string>>& result, vector<vector<int>>& dp,vector<string>& tmp,const string& s,int pos){
+        if(pos == s.size()){
+            result.push_back(tmp);
+            return;
+        }
+        for(int j=pos; j<s.size(); j++){              //逐个判断右边界是否符合条件
+            if(dp[pos][j]){
+                tmp.push_back(s.substr(pos, j-pos+1));
+                dfs(result, dp, tmp, s, j+1);
+                tmp.pop_back();
+            }
+        }
+    }
+    vector<vector<string>> partition(string s) {
+        int len = s.size();
+        vector<vector<int>> dp(len, vector<int>(len)); 
+        vector<vector<string>> result;
+        vector<string> tmp;
+        for(int i=0; i<len; i++){             
+            for(int j=0; j<len; j++){
+                dp[i][j] = 1;
+            }
+        }
+        for(int i=len-1; i>=0; i--){
+            for(int j=i+1; j<len; j++){
+                dp[i][j] = dp[i+1][j-1] && (s[i]==s[j]);        //i>j时空串，也是回文串
+            }
+        }
+        dfs(result, dp, tmp, s, 0);
+        return result;
+    }
+};
+
+时间复杂度：O(n⋅2^n)，其中n是字符串s的长度。在最坏情况下，s包含n个完全相同的字符，因此它的任意一种划分方法都满足要求。而长度为n的字符串的划分方案数为 2^{n-1}=O(2^n)，
+每一种划分方法需要O(n)的时间求出对应的划分结果并放入答案，因此总时间复杂度为O(n⋅2^n)。尽管动态规划预处理需要O(n^2)的时间，但在渐进意义下小于O(n⋅2^n)，因此可以忽略。
+空间复杂度：O(n^2)，这里不计算返回答案占用的空间。数组f需要使用的空间为O(n^2)，而在回溯的过程中，我们需要使用O(n)的栈空间以及O(n)的用来存储当前字符串分割方法的空间。由于O(n)在渐进
+意义下小于O(n^2)，因此空间复杂度为O(n^2)。
+
+二：回溯+记忆化搜索
+
+class Solution {
+public:
+    
+    void dfs(vector<vector<string>>& result, vector<vector<int>>& f,vector<string>& tmp,const string& s,int pos){
+        if(pos == s.size()){
+            result.push_back(tmp);
+            return;
+        }
+        for(int j=pos; j<s.size(); j++){              //逐个判断右边界是否符合条件
+            if(issearch(f, s, pos, j)==1){
+                tmp.push_back(s.substr(pos, j-pos+1));
+                dfs(result, f, tmp, s, j+1);
+                tmp.pop_back();
+            }
+        }
+    }
+    //判断该段序列是否已经搜索过，0：未搜索，1：已搜索且是回文串，-1：已搜索且不是回文串
+    int issearch(vector<vector<int>>& f, const string& s, int l, int r){
+        if(f[l][r]) return f[l][r];
+        if(l>=r) return f[l][r]=1;
+        return f[l][r]=(s[l]==s[r])?issearch(f, s, l+1, r-1):-1;
+    }
+    vector<vector<string>> partition(string s) {
+        int len = s.size();
+        vector<vector<int>> f(len, vector<int>(len)); 
+        vector<vector<string>> result;
+        vector<string> tmp;
+        dfs(result, f, tmp, s, 0);
+        return result;
+    }
+};
+
+
+时间复杂度：O(n⋅2^n)，其中n是字符串s的长度。在最坏情况下，s包含n个完全相同的字符，因此它的任意一种划分方法都满足要求。而长度为n的字符串的划分方案数为 2^{n-1}=O(2^n)，
+每一种划分方法需要O(n)的时间求出对应的划分结果并放入答案，因此总时间复杂度为O(n⋅2^n)。尽管动态规划预处理需要O(n^2)的时间，但在渐进意义下小于O(n⋅2^n)，因此可以忽略。
+空间复杂度：O(n^2)，这里不计算返回答案占用的空间。数组f需要使用的空间为O(n^2)，而在回溯的过程中，我们需要使用O(n)的栈空间以及O(n)的用来存储当前字符串分割方法的空间。由于O(n)在渐进
+意义下小于O(n^2)，因此空间复杂度为O(n^2)。
