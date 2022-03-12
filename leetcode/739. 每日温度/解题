@@ -1,0 +1,70 @@
+【C++】
+
+一：辅助（单调）栈
+
+可以维护一个存储下标的单调栈，从栈底到栈顶的下标对应的温度列表中的温度依次递减。如果一个下标在单调栈里，则表示尚未找到下一次温度更高的下标。
+
+正向遍历温度列表。对于温度列表中的每个元素 temperatures[i]，如果栈为空，则直接将 i 进栈，如果栈不为空，则比较栈顶元素 prevIndex 对应的温度 temperatures[prevIndex] 和
+当前温度 temperatures[i]，如果 temperatures[i] > temperatures[prevIndex]，则将 prevIndex 移除，并将 prevIndex 对应的等待天数赋为 i - prevIndex，重复上述操作直到栈为空
+或者栈顶元素对应的温度小于等于当前温度，然后将 i 进栈。
+
+为什么可以在弹栈的时候更新 ans[prevIndex] 呢？因为在这种情况下，即将进栈的 i 对应的 temperatures[i] 一定是 temperatures[prevIndex] 右边第一个比它大的元素，试想如果
+prevIndex 和 i 有比它大的元素，假设下标为 j，那么 prevIndex 一定会在下标 j 的那一轮被弹掉。
+
+由于单调栈满足从栈底到栈顶元素对应的温度递减，因此每次有元素进栈时，会将温度更低的元素全部移除，并更新出栈元素对应的等待天数，这样可以确保等待天数一定是最小的。
+
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& temperatures) {
+        int len = temperatures.size();
+        vector<int> answer(len,0);
+        stack<int> stk;
+        for(int i=0; i<len; i++){
+            while(!stk.empty() && temperatures[stk.top()]<temperatures[i]){
+                int val = stk.top();
+                answer[val] = i-stk.top();
+                stk.pop();
+            }
+            stk.push(i);
+        }
+        return answer;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+二：暴力
+
+对于温度列表中的每个元素 temperatures[i]，需要找到最小的下标 j，使得 i < j 且 temperatures[i] < temperatures[j]。
+
+由于温度范围在 [30, 100] 之内，因此可以维护一个数组 next 记录每个温度第一次出现的下标。数组 next 中的元素初始化为无穷大，在遍历温度列表的过程中更新 next 的值。
+
+反向遍历温度列表。对于每个元素 temperatures[i]，在数组 next 中找到从 temperatures[i] + 1 到 100 中每个温度第一次出现的下标，将其中的最小下标记为 warmerIndex，
+则 warmerIndex 为下一次温度比当天高的下标。如果 warmerIndex 不为无穷大，则 warmerIndex - i 即为下一次温度比当天高的等待天数，最后令 next[temperatures[i]] = i。
+
+为什么上述做法可以保证正确呢？因为遍历温度列表的方向是反向，当遍历到元素 temperatures[i] 时，只有 temperatures[i] 后面的元素被访问过，即对于任意 t，当 next[t] 不为无穷大时，
+一定存在 j 使得 temperatures[j] == t 且 i < j。又由于遍历到温度列表中的每个元素时都会更新数组 next 中的对应温度的元素值，因此对于任意 t，当 next[t] 不为无穷大时，
+令 j = next[t]，则 j 是满足 temperatures[j] == t 且 i < j 的最小下标。
+
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& temperatures) {
+        int n = temperatures.size();
+        vector<int> ans(n), next(101, INT_MAX);                        //next为每个温度第一次出现的下标位置
+        for (int i = n - 1; i >= 0; --i) {
+            int warmerIndex = INT_MAX;
+            for (int t = temperatures[i] + 1; t <= 100; ++t) {
+                warmerIndex = min(warmerIndex, next[t]);              
+            }
+            if (warmerIndex != INT_MAX) {
+                ans[i] = warmerIndex - i;
+            }
+            next[temperatures[i]] = i;
+        }
+        return ans;
+    }
+};
+
+时间复杂度：O(nm)，其中n是温度列表的长度，m是数组 next 的长度，在本题中温度不超过100，所以m的值为100。反向遍历温度列表一遍，对于温度列表中的每个值，都要遍历数组 next 一遍。
+空间复杂度：O(m)，其中m是数组next的长度。除了返回值以外，需要维护长度为m的数组 next记录每个温度第一次出现的下标位置。
