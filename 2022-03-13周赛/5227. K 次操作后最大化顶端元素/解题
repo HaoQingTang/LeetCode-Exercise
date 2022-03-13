@@ -1,0 +1,37 @@
+【C++】
+
+一：贪心+分类
+
+贪心取出前k−1个元素，第k次操作可以
+将已经移除的最大的元素放回栈顶，或取出第k个元素，此时栈顶为第k+1 个元素
+
+分类讨论：
+当nums.length = 1时，k为奇数则会把唯一元素拿出，返回−1
+当 k > nums.length 时，可以取出所有元素，做一些无效操作浪费次数，并保证最后将最大的元素放在栈顶，返回最大数max
+当 k < nums.length 时，取出前k−1 个元素，放回已取出的最大数或将第k个元素取出
+当 k = nums.length 时，取出前k−1 个元素后，再取出一个会导致空栈，此时只能将最大的元素放回栈顶
+
+class Solution {
+public:
+    int maximumTop(vector<int>& nums, int k) {
+        int len = nums.size();
+        if(len==1 && k%2==1) return -1;
+        int maxval = 0;
+        int i = 0;
+        while(k--){
+            if(k>=1 && i<=len-1){
+                maxval = max(maxval, nums[i]);
+                i++;
+                
+            }
+            else{
+                if(i<len-1 && nums[i+1]>maxval) nums[0] = nums[i+1];   //选择删除
+                else return maxval;                                    //选择重新添加
+            }
+        }
+        return nums[0];
+    }
+};
+
+时间复杂度：O(k)
+空间复杂度：O(1)
