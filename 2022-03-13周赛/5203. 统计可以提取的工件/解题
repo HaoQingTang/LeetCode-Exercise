@@ -1,0 +1,33 @@
+【C++】
+
+一：标记dig
+
+class Solution {
+public:
+    int digArtifacts(int n, vector<vector<int>>& artifacts, vector<vector<int>>& dig) {
+        int count = 0;
+        vector<vector<int>> index(n,vector<int>(n,0));
+        for(auto& dignum:dig){
+            int r = dignum[0], c = dignum[1];
+            index[r][c] = 1;
+        }
+        for(auto& artifact:artifacts){
+            int r1 = artifact[0], c1 = artifact[1];
+            int r2 = artifact[2], c2 = artifact[3];
+            bool flag = true;
+            for(int i=r1; i<=r2; i++){
+                for(int j=c1; j<=c2; j++){
+                    if(index[i][j]==0){
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if(flag) count++;
+        }
+        return count;
+    }
+};
+
+时间复杂度：O(n·2^2)
+空间复杂度：O(n^2)
