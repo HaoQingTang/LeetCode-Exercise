@@ -1,0 +1,29 @@
+【C++】
+
+一：暴力
+
+class Solution {
+public:
+    vector<int> findKDistantIndices(vector<int>& nums, int key, int k) {
+        int len = nums.size();
+        vector<int> indexes;
+        for(int i=0; i<len; i++){
+            if(nums[i]==key) indexes.push_back(i);
+        }
+        vector<int> result;
+        unordered_set<int> set;
+        for(int index:indexes){
+            for(int i=max(0, index-k); i<=index+k && i<len; i++){
+                if(set.find(i)==set.end()){
+                    set.insert(i);
+                    result.push_back(i);
+                }
+            }
+        }
+        sort(result.begin(), result.end());
+        return result;
+    }
+};
+
+时间复杂度：O(n^2)
+空间复杂度：O(n)
