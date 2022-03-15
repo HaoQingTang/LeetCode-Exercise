@@ -1,0 +1,60 @@
+【C++】
+
+一：迭代
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        if(!head) return head;
+        ListNode* dummy = new ListNode(0, head);
+        ListNode* cur = dummy;
+        while(cur->next!=nullptr){
+            if(cur->next->val==val){
+                cur->next = cur->next->next;
+            }
+            else cur = cur->next;
+        }
+        return dummy->next;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+二：递归
+
+对于给定的链表，首先对除了头节点head以外的节点进行删除操作，然后判断head 的节点值是否等于给定的val。如果head 的节点值等于val，则head需要被删除，因此删除操作后的头节点为head.next；
+如果head 的节点值不等于val，则head 保留，因此删除操作后的头节点还是ead。上述过程是一个递归的过程。
+递归的终止条件是head 为空，此时直接返回head。当head 不为空时，递归地进行删除操作，然后判断head的节点值是否等于val并决定是否要删除head。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        if(!head) return head;
+        head->next = removeElements(head->next, val);
+        return head->val==val?head->next:head;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
