@@ -1,0 +1,57 @@
+【C++】
+
+一：模拟
+
+把链表节点按照 k 个一组分组，所以可以使用一个指针 head 依次指向每组的头节点。这个指针每次向前移动 k 步，直至链表结尾。
+对于每个分组，我们先判断它的长度是否大于等于 k。若是，我们就翻转这部分链表，否则不需要翻转。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    pair<ListNode*, ListNode*> reverse(ListNode* head, ListNode* tail){
+        ListNode* tmp = nullptr;
+        ListNode* cur = head;
+        while(cur){
+            ListNode* nextnode = cur->next;
+            cur->next = tmp;
+            tmp = cur;
+            cur = nextnode;
+        }
+        return {tail, head};
+    }
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        ListNode* dummy = new ListNode(0, head);
+        ListNode* cur = dummy;
+        while(head){
+            ListNode* tail = cur;
+            for(int i=0; i<k; i++){
+                tail = tail->next;
+                if(!tail){
+                    return dummy->next;
+                }
+            }
+            ListNode* nextnode = tail->next;
+            tail->next = nullptr;
+            pair<ListNode*, ListNode*> result =  reverse(head, tail);
+            head = result.first;
+            tail = result.second;
+            cur->next = head;
+            tail->next = nextnode;
+            cur = tail;
+            head = tail->next;
+        }
+        return dummy->next;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)，我们只需要建立常数个变量。
