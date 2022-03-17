@@ -1,0 +1,93 @@
+【C++】
+
+一：暴力
+
+class Solution {
+public:
+    vector<int> sortedSquares(vector<int>& nums) {
+        int len = nums.size();
+        vector<int> result(len);
+        for(int i=0; i<len; i++){
+            result[i] = nums[i]*nums[i];
+        }
+        sort(result.begin(), result.end());
+        return result;
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(logn)
+
+二：双指针+逆序放入数组
+
+class Solution {
+public:
+    vector<int> sortedSquares(vector<int>& nums) {
+        int len = nums.size();
+        vector<int> result(len);
+        int i=0, j=len-1;
+        int index = len-1;
+        while(i<=j){
+            if(nums[i]*nums[i]>nums[j]*nums[j]){
+                result[index] = nums[i]*nums[i];
+                index--;
+                i++;
+            }
+            else{
+                result[index] = nums[j]*nums[j];
+                index--;
+                j--;
+            }
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+三：双指针
+
+找到正负数的交界处，负数部分平方后会递减，正数部分平方后递加
+
+class Solution {
+public:
+    vector<int> sortedSquares(vector<int>& nums) {
+        int len = nums.size();
+        vector<int> result(len);
+        int index = 0;
+        int negative = -1;
+        for(int i=0; i<len; i++){       //找到正负数的交界处
+            if(nums[i]<0) negative++;
+            else break;
+        }
+        int i=negative, j=negative+1;
+        while(j<len || i>=0){
+            if(j==len){
+                result[index] = nums[i]*nums[i];
+                i--;
+                index++;
+            }
+            else if(i<0){
+                result[index] = nums[j]*nums[j];
+                j++;
+                index++;
+            }
+            else if(nums[i]*nums[i]<nums[j]*nums[j]){
+                result[index] = nums[i]*nums[i];
+                i--;
+                index++;
+            }
+            else{
+                result[index] = nums[j]*nums[j];
+                j++;
+                index++;
+            }
+        }
+        return result;
+    }
+};
+
+
+时间复杂度：O(n)
+空间复杂度：O(1)
