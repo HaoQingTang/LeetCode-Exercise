@@ -1,0 +1,104 @@
+【C++】
+
+一：把nums2接在nums1后面，再排序
+
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        int len = nums1.size();
+        for(int i=0; i<n; i++){
+            nums1[i+m] = nums2[i];
+        }
+        sort(nums1.begin(),nums1.end());
+    }
+};
+时间复杂度：O((m+n)log(m+n))。排序序列长度为m+n，套用快速排序的时间复杂度即可，平均情况为O((m+n)log(m+n))。
+空间复杂度：O(log(m+n))。排序序列长度为m+n，套用快速排序的空间复杂度即可，平均情况为O(log(m+n))
+
+二：双指针+辅助数组
+
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        vector<int> result(m+n);
+        int i = 0, j = 0;
+        int cur;
+        while(i<m || j<n){
+            if(i==m){
+                result[i+j] = nums2[j];
+                j++;
+            }
+            else if(j==n){
+                result[i+j] = nums1[i];
+                i++;
+            }
+            else if(nums1[i]<nums2[j]){
+                result[i+j] = nums1[i];
+                i++;
+            }
+            else{
+                result[i+j] = nums2[j];
+                j++;
+            }
+        }
+        for(int i=0; i<nums1.size(); i++){
+            nums1[i] = result[i];
+        }
+    }
+};
+
+时间复杂度：O(m+n)
+空间复杂度：O(m+n)
+
+三：逆向双指针+从后面的0开始改
+
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        int i = m-1, j = n-1;
+        int l = nums1.size()-1;
+        while(j>=0){
+            while(i>=0 && nums1[i]>nums2[j]){
+                swap(nums1[i], nums1[l]);
+                i--;
+                l--;
+            }
+            swap(nums2[j], nums1[l]);
+            j--;
+            l--;
+        }
+    }
+};
+
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        int i = m-1, j = n-1;
+        int l = nums1.size()-1;
+        while(i>=0 || j>=0){
+            if(i<0){
+                nums1[l] = nums2[j];
+                l--;
+                j--;
+            }
+            else if(j<0){
+                nums1[l] = nums1[i];
+                i--;
+                l--;
+            }
+            else if(nums1[i]>nums2[j]){
+                nums1[l] = nums1[i];
+                i--;
+                l--;
+            }
+            else{
+                nums1[l] = nums2[j];
+                j--;
+                l--;
+            }
+        }
+    }
+};
+
+时间复杂度：O(m+n)
+空间复杂度：O(1)
