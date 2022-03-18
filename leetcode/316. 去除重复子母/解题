@@ -1,0 +1,41 @@
+【C++】
+
+一：贪心+单调栈
+
+先使用哈希表统计每个子母的出现的次数。
+遍历字符串，当遍历到的子符在前面选定的字符串中出现过时，则舍弃，哈希表减1；若未出现过，则与选定的左边的字符做对比。
+
+class Solution {
+public:
+    string removeDuplicateLetters(string s) {
+        unordered_map<char, int> map;
+        for(char ch:s){
+            map[ch]++;
+        }
+        vector<char> tmp;
+        for(char ch:s){
+            bool exist = false;
+            for(char t:tmp){
+                if(t==ch) exist = true;
+            }
+            if(exist==false){
+                while(tmp.size()!=0 && tmp.back()>ch && map[tmp.back()]>1){
+                    map[tmp.back()]--;
+                    tmp.pop_back();
+                }
+                tmp.push_back(ch);
+            }
+            else map[ch]--;
+        }
+        string result = "";
+        for(char t:tmp){
+            result += t;
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(N)，其中N为字符串长度。代码中虽然有双重循环，但是每个字符至多只会入栈、出栈各一次。
+
+空间复杂度：O(∣Σ∣)，其中Σ 为字符集合，本题中字符均为小写字母，所以∣Σ∣=26。由于栈中的字符不能重复，因此栈中最多只能有∣Σ∣ 个字符，另外需要维护两个数组，
+分别记录每个字符是否出现在栈中以及每个字符的剩余数量。
