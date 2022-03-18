@@ -1,0 +1,30 @@
+【C++】
+
+一：贪心
+
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+       int money5 = 0, money10 = 0;
+        for(int bill:bills){
+            if(bill==5) money5++;
+            else if(bill==10){
+                money10++;
+                if(money5<1) return false;
+                else money5--;
+            }
+            else{
+                if(money10>=1 && money5>=1){   //贪心，优先用10块
+                    money10--;
+                    money5--;
+                } 
+                else if(money5>=3) money5 -= 3;
+                else return false;
+            }
+        }
+        return true;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
