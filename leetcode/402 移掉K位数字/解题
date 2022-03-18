@@ -1,0 +1,78 @@
+【C++】
+
+一：贪心+单调栈
+用一个栈维护当前的答案序列，栈中的元素代表截止到当前位置，删除不超过k次个数字后，所能得到的最小整数。
+根据之前的讨论：在使用 k个删除次数之前，栈中的序列从栈底到栈顶单调不降。不断地与左边的数进行对比，比左边的小，则丢弃左边的数
+
+因此，对于每个数字，如果该数字小于栈顶元素，我们就不断地弹出栈顶元素，直到
+1.栈为空
+2.或者新的栈顶元素不大于当前数字
+3.或者我们已经删除了k位数字
+
+上述步骤结束后我们还需要针对一些情况做额外的处理：
+如果我们删除了m个数字且m<k，这种情况下我们需要从序列尾部删除额外的k−m 个数字。
+如果最终的数字序列存在前导零，我们要删去前导零。
+如果最终数字序列为空，我们应该返回0。
+最终，从栈底到栈顶的答案序列即为最小数。
+
+考虑到栈的特点是后进先出，如果通过栈实现，则需要将栈内元素依次弹出然后进行翻转才能得到最小数。为了避免翻转操作，可以使用双端队列代替栈的实现。
+
+【超出时间限制】
+class Solution {
+public:
+    string removeKdigits(string num, int k) {
+        stack<char> stk;
+        for(char ch:num){
+            while(!stk.empty() && stk.top()>ch && k){
+                stk.pop();
+                k--;
+            }
+            stk.push(ch);
+        }
+        for(;k>0;k--){                 //可能出现k仍不为0的情况
+            stk.pop();
+        }
+        string tmp = "";
+        while(!stk.empty()){
+            tmp = stk.top()+tmp;
+            stk.pop();
+        }
+        int index = 0;
+        while(index<tmp.size()){
+            if(tmp[index]=='0') index++;                
+            else break;
+        }
+        string result = tmp.substr(index, tmp.size()-index);        //去除前置0
+        return result==""?"0":result;
+    }
+};
+
+【成功运行】
+class Solution {
+public:
+    string removeKdigits(string num, int k) {
+        vector<char> stk;
+        for(char ch:num){
+            while(stk.size()!=0 && stk.back()>ch && k){
+                stk.pop_back();
+                k--;
+            }
+            stk.push_back(ch);
+        }
+        for(;k>0;k--){                 //可能出现k仍不为0的情况
+            stk.pop_back();
+        }
+        string tmp = "";
+        bool iszero = true;
+        for(auto ch:stk){
+            if(iszero && ch=='0') continue;   //去除前置零
+            tmp += ch;
+            iszero = false;
+        }
+        return tmp==""?"0":tmp;
+    }
+};
+
+时间复杂度：O(n)，其中n为字符串的长度。尽管存在嵌套循环，但内部循环最多运行k次。由于0<k≤n，主循环的时间复杂度被限制在2n 以内。
+对于主循环之外的逻辑，它们的时间复杂度是O(n)，因此总时间复杂度为O(n)。
+空间复杂度：O(n)。栈存储数字需要线性的空间。
