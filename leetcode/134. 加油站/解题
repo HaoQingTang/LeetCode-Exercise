@@ -1,0 +1,33 @@
+【C++】
+
+一：一次遍历
+
+假设从加油站x出发，每经过一个加油站就加一次油（包括起始加油站），最后一个可以到达的加油站是y（不妨设x<y）。
+可以得知从x,y之间的任何一个加油站出发，都无法到达加油站y的下一个加油站。
+
+在发现了这一个性质后，算法就很清楚了：我们首先检查第0个加油站，并试图判断能否环绕一周；如果不能，就从第一个无法到达的加油站开始继续检查。
+
+class Solution {
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int len = gas.size();
+        int i=0;
+        while(i<len){
+            int sumofgas = 0, sumofcost = 0;
+            int count = 0;
+            while(count<len){
+                int j = (i+count)%len;
+                sumofgas += gas[j];
+                sumofcost += cost[j];
+                if(sumofcost>sumofgas) break;
+                count++;
+            }
+            if(count==len) return i;
+            else i = i+count+1;
+        }
+        return -1;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
