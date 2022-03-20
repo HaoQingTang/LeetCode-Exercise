@@ -1,0 +1,91 @@
+【C++】
+
+一：递归回溯
+当已经使用的左括号数小于n时，才能生成左括号
+当生成的左括号数大于生成的右括号数时，才能生成右括号
+
+class Solution {
+public:
+    void dfs(int n, vector<string>& result, string& str, int left, int right){
+        if(left==n && right==n){               //left:已经使用的左括号个数，right:已经使用的右括号个数
+            result.push_back(str);
+            return;
+        }
+        if(left<n){
+            str += "(";
+            dfs(n, result, str, left+1, right);
+            str.pop_back();
+        }
+        if(left>right){
+            str += ")";
+            dfs(n, result, str, left, right+1);
+            str.pop_back();
+        }
+    }
+    vector<string> generateParenthesis(int n) {
+        vector<string> result;
+        string tmp = "";
+        dfs(n, result, tmp, 0, 0);
+        return result;
+    }
+};
+
+二：暴力
+没有剪枝的过程，没添加一个左/右括号都判断一次是否合理
+
+class Solution {
+public:
+    bool valid(string& str){
+        int balance = 0;
+        for(auto ch:str){
+            if(ch=='(') balance++;
+            else balance--;
+            if(balance<0) return false;
+        }
+        return balance==0;
+    }
+    void generate(vector<string>& result, string& str, int n){
+        if(str.size()==2*n){
+            if(valid(str)) result.push_back(str);                  //字符串有效
+            return;
+        }
+        str += "(";
+        generate(result, str, n);
+        str.pop_back();
+        str += ")";
+        generate(result, str, n);
+        str.pop_back();
+    }
+    vector<string> generateParenthesis(int n) {
+        vector<string> result;
+        string tmp = "";
+        generate(result, tmp, n);
+        return result;
+    }
+};
+
+三：动态规划
+
+(p)q
+
+p+q=n-1
+
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        vector<vector<string>> dp(n+1);
+        dp[0] = {""};
+        dp[1] = {"()"};
+        for(int i=2; i<=n; i++){
+            for(int j=0; j<i; j++){
+                for(string str1:dp[j]){
+                    for(string str2:dp[i-j-1]){            //j+(i-j-1)=i-1
+                        string str = "("+str1+")"+str2;
+                        dp[i].push_back(str);
+                    }
+                }
+            }
+        }
+        return dp[n];
+    }
+};
