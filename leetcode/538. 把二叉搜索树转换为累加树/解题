@@ -1,0 +1,34 @@
+【C++】
+
+一：反序中序遍历
+
+题目要求：使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。因此从右节点开始计算，右子树->根节点->左子树
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int sum = 0;
+
+    TreeNode* convertBST(TreeNode* root) {
+        if(root!=nullptr){
+            root->right = convertBST(root->right);
+            sum += root->val;
+            root->val = sum;
+            root->left = convertBST(root->left);
+        }
+        return root;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
