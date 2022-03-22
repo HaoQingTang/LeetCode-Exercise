@@ -1,0 +1,52 @@
+【C++】
+
+一：动态规划
+
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int> dp(amount+1,amount+1);
+        dp[0] = 0;
+        for(int i=1; i<=amount; i++){
+            for(int j=0; j<coins.size(); j++){
+                if(coins[j]<=i) dp[i] = min(dp[i],dp[i-coins[j]]+1);
+            }
+        }
+        return dp[amount]>amount?-1:dp[amount];  //当dp[amount]>amount证明找不到合适的coin来表示，仍是初始化状态
+    }
+};
+
+时间复杂度：O(Sn)
+空间复杂度：O(S)，S代表金额的数量
+
+二：记忆化搜索
+
+也是采用动态规划的思想，但是为了避免重复的计算，我们将每个子问题的答案存在一个数组中进行记忆化，如果下次还要计算这个问题的值直接从数组中取出返回即可，
+这样能保证每个子问题最多只被计算一次。
+
+class Solution {
+public:
+    vector<int> count; //记录每个子问题的答案
+    int dp(vector<int>& coins, int res){
+        if(res<0) return -1;
+        if(res==0) return 0;
+        if(count[res-1]!=0) return count[res-1];               //这个数已经计算过
+        int minval = INT_MAX;
+        for(int coin:coins){
+            int tmp = dp(coins, res-coin);
+            if(tmp>=0 && tmp<minval){                      //更新最小次数
+                minval = tmp + 1;
+            }
+        }
+        count[res-1] = minval==INT_MAX?-1:minval;
+        return count[res-1];
+    }
+    int coinChange(vector<int>& coins, int amount) {
+        if(amount==0) return 0;
+        count.resize(amount);
+        return dp(coins,amount);
+    }
+};
+
+时间复杂度：O(Sn)
+空间复杂度：O(S)，S代表金额的数量
