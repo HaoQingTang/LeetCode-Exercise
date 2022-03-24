@@ -35,3 +35,26 @@ public:
         return -1;
     }
 };
+
+三：哈希表+队列
+
+class Solution {
+public:
+    int FirstNotRepeatingChar(string str) {
+        unordered_map<char, int> map;
+        queue<pair<char, int>> q;
+        for(int i=0; i<s.size(); i++){
+            if(!map.count(s[i])){
+                map[s[i]] = i;
+                q.emplace(s[i],i);
+            }
+            else{
+                map[s[i]] = -1;
+                while(!q.empty()&&map[q.front().first]==-1){
+                    q.pop();
+                }
+            }
+        }
+        return q.empty()?-1:q.front().second;
+    }
+};
