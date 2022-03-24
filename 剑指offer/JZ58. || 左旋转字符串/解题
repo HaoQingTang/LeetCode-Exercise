@@ -1,0 +1,30 @@
+【C++】
+
+一：
+
+class Solution {
+public:
+    string reverseLeftWords(string s, int n) {
+        string tmp = "";
+        for(int i=0; i<n; i++){
+            tmp += s[i];
+        }
+        string result = s.substr(n, s.size()-n) + tmp;
+        return result;
+    }
+};
+
+二：拼接再切分
+
+class Solution {
+public:
+    string reverseLeftWords(string s, int n) {
+        int len = s.size();
+        s += s;
+        string result = s.substr(n, len);
+        return result;
+    }
+};
+
+时间复杂度：O(1)
+空间复杂度：O(1)
