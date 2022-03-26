@@ -50,3 +50,40 @@ public:
 时间复杂度：O(N)，其中N是字符串的长度。左指针和右指针分别会遍历整个字符串一次。
 空间复杂度：O(∣Σ∣)，其中Σ 表示字符集（即字符串中可以出现的字符），∣Σ∣ 表示字符集的大小。
 在本题中没有明确说明字符集，因此可以默认为所有 ASCII 码在[0,128)内的字符，即∣Σ∣=128。我们需要用到哈希集合来存储出现过的字符，而字符最多有∣Σ∣ 个，因此空间复杂度为O(∣Σ∣)。
+
+二：动态规划
+
+状态定义： 设动态规划列表dp ，dp[j]代表以字符s[j]为结尾的 “最长不重复子字符串” 的长度。
+
+转移方程： 固定右边界j ，设字符s[j]左边距离最近的相同字符为s[i] ，即 s[i]=s[j] 。
+
+当i<0，即s[j] 左边无相同字符，则 dp[j]=dp[j−1]+1 ；
+当dp[j−1]<j−i ，说明字符s[i] 在子字符串dp[j−1] 区间之外 ，则dp[j]=dp[j−1]+1 ；
+当dp[j−1]≥j−i ，说明字符s[i] 在子字符串dp[j−1] 区间之中 ，则dp[j]的左边界由s[i] 决定，即 dp[j]=j−i ；
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int len = s.size();
+        if(len==0) return 0;
+        vector<int> dp(len);
+        unordered_map<char, int> map;             //记录每个字符最近出现的索引
+        dp[0] = 1;
+        map[s[0]] = 0;
+        int maxval = dp[0];
+        for(int i=1; i<len; i++){
+            if(map.find(s[i])==map.end()){
+                map[s[i]] = i;
+                dp[i] = dp[i-1]+1;
+            }
+            else{
+                int j = map[s[i]];
+                if(dp[i-1]<i-j) dp[i] = dp[i-1]+1;
+                else dp[i] = i-j;
+                map[s[i]] = i;
+            }
+            maxval = max(maxval, dp[i]);
+        }
+        return maxval;
+    }
+};
