@@ -1,0 +1,34 @@
+【C++】
+
+一：找规律
+
+intLength长的回文串的个数为9*10^(intLength-1)/2
+
+回文数的左半部分为10^⌊(intLength−1)/2⌋+q−1
+
+反转这个数，拼到左半部分之后即为第q个回文数。
+
+如果intLength 为奇数则先去掉最低位再反转。
+
+class Solution {
+public:
+    vector<long long> kthPalindrome(vector<int>& queries, int intLength) {
+        vector<long long int> result;
+        int base = pow(10, (intLength-1)/2);
+        for(int query:queries){
+            if(query<=9*base){                               //判断是否超界
+                long long int num = base+query-1;            //左半部分
+                long long int rev = num;
+                if(intLength%2==1) rev /= 10;
+                while(rev!=0){                               //反转，得到右半部分
+                    num = num*10+(rev%10);
+                    rev /= 10;
+                }
+                result.push_back(num);
+            }
+            else result.push_back(-1);
+            
+        }
+        return result;
+    }
+};
