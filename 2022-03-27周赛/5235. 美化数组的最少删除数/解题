@@ -1,0 +1,18 @@
+【C++】
+
+一：栈，模拟
+
+class Solution {
+public:
+    int minDeletion(vector<int>& nums) {
+        stack<int> stk;
+        int count = 0;
+        for(int i=0; i<nums.size(); i++){
+            if(i==nums.size()-1 && (stk.empty() || stk.size()%2==0)) count++;
+            else if(stk.empty() || nums[i]!=stk.top() || stk.size()%2==0) stk.push(nums[i]);
+            else count++;
+        }
+        if(stk.size()%2==1) count++;
+        return count;
+    }
+};
