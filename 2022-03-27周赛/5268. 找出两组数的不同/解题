@@ -1,0 +1,26 @@
+【C++】
+
+一：哈希表
+
+class Solution {
+public:
+    vector<vector<int>> findDifference(vector<int>& nums1, vector<int>& nums2) {
+        unordered_map<int, int> map1, map2;
+        vector<vector<int>> result;
+        vector<int> tmp1, tmp2;
+        for(int num1:nums1) map1[num1]++;
+        for(int num2:nums2) map2[num2]++;
+        for(auto it=map1.begin(); it!=map1.end(); it++){
+            if(map2.find(it->first)==map2.end()) tmp1.push_back(it->first);
+        }
+        for(auto it=map2.begin(); it!=map2.end(); it++){
+            if(map1.find(it->first)==map1.end()) tmp2.push_back(it->first);
+        }
+        result.push_back(tmp1);
+        result.push_back(tmp2);
+        return result;
+    }
+};
+
+时间复杂度：O(n)或O(nlogn)？
+空间复杂度：O(n)
