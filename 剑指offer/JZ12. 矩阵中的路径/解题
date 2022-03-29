@@ -1,0 +1,48 @@
+【C++】
+
+一：dfs+回溯
+
+递归参数： 当前元素在矩阵 board 中的行列索引 i 和 j ，当前目标字符在 word 中的索引 k 。
+
+终止条件：
+返回 false： (1) 行或列索引越界 或 (2) 当前矩阵元素与目标字符不同 或 (3) 当前矩阵元素已访问过 （ (3) 可合并至 (2) ） 。
+返回 true： k = len(word) - 1 ，即字符串 word 已全部匹配。
+
+递推工作：
+标记当前矩阵元素： 将 board[i][j] 修改为 空字符 '' ，代表此元素已访问过，防止之后搜索时重复访问。
+搜索下一单元格： 朝当前元素的 上、下、左、右 四个方向开启下层递归，使用 或 连接 （代表只需找到一条可行路径就直接返回，不再做后续 DFS ），并记录结果至 res 。
+还原当前矩阵元素： 将 board[i][j] 元素还原至初始值，即 word[k] 。
+
+返回值： 返回布尔量 res ，代表是否搜索到目标字符串。
+
+class Solution {
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        int len = word.size();
+        if(len==0) return true;
+        int lenr = board.size();
+        int lenc = board[0].size();
+        for(int i=0; i<lenr; i++){
+            for(int j=0; j<lenc; j++){
+                if(dfs(board, word, 0, i, j)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool dfs(vector<vector<char>>& board, string word, int index, int i, int j){
+        if(i<0 || i>=board.size() || j<0 ||j>=board[0].size() || board[i][j]!=word[index]) return false;
+        if(index==word.size()-1) return true;
+        board[i][j] = '/';
+        bool f = dfs(board, word, index+1, i-1, j) ||dfs(board, word, index+1, i+1, j)||dfs(board, word, index+1, i ,j-1) || dfs(board, word, index+1, i, j+1);
+        board[i][j] = word[index];
+        return f;
+    }
+};
+
+时间复杂度 O(3^K·MN)： 最差情况下，需要遍历矩阵中长度为K字符串的所有方案，时间复杂度为O(3^K)；矩阵中共有MN个起点，时间复杂度为O(MN) 。
+方案数计算：设字符串长度为K，搜索中每个字符有上、下、左、右四个方向可以选择，舍弃回头（上个字符）的方向，剩下3种选择，因此方案数的复杂度为O(3^K)。
+空间复杂度O(K)： 搜索过程中的递归深度不超过K ，因此系统因函数调用累计使用的栈空间占用O(K)（因为函数返回后，系统调用的栈空间会释放）。最坏情况下K=MN，递归深度为MN，
+此时系统栈使用O(MN) 的额外空间。
