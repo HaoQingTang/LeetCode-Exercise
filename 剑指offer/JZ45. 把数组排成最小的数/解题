@@ -1,0 +1,36 @@
+【C++】
+
+排序规则：若字符串x与y拼接在一起（x+y）大于字符串y与x拼接在一起（y+x），则x>y，x排在y的右边。
+
+一：快速排序
+class Solution {
+public:
+    string minNumber(vector<int>& nums) {
+        vector<string> str(nums.size());
+        for(int num:nums){
+            str.push_back(to_string(num));
+        }
+        quicksort(str, 0, str.size()-1);
+        string result = "";
+        for(auto s:str){
+            result += s;
+        }
+        return result;
+    }
+    void quicksort(vector<string>& str, int l, int r){
+        if(l>=r) return;
+        int i = l, j = r;
+        while(i<j){
+            //以str[l]作为基准
+            while(i<j && str[j]+str[l]>=str[l]+str[j]) j--;       //从后往前找比str[l]大的值
+            while(i<j && str[i]+str[l]<=str[l]+str[i]) i++;       //从前往后找比str[l]小的值
+            swap(str[i], str[j]);
+        }
+        swap(str[i], str[l]);
+        quicksort(str, l, i-1);
+        quicksort(str, i+1, r);
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(n)
