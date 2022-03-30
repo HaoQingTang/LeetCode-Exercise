@@ -1,0 +1,48 @@
+【C++】
+
+一：排序+遍历
+
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int i = 0;
+        while(nums[i]==0) i++;
+        int num_z = i;
+        for(; i<nums.size()-1; i++){
+            if(nums[i+1]-nums[i]!=1){
+                int num = nums[i+1]-nums[i]-1;
+                if(num<0 || num_z<num) return false;
+                else num_z -= num;
+            }
+        }
+        return true;
+    }
+};
+
+时间复杂度：O(nlogn)
+空间复杂度：O(1)
+
+二：哈希表+遍历
+
+判断maxval-minval<0是否为正
+
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        unordered_set<int> set;
+        int maxval = 0;
+        int minval = 14;
+        for(int num:nums){
+            if(num==0) continue;
+            if(set.find(num)!=set.end()) return false;
+            else set.insert(num);
+            maxval = max(maxval, num);
+            minval = min(minval, num);
+        }
+        return (maxval-minval)<5;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(n)
