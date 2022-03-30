@@ -1,0 +1,54 @@
+【C++】
+
+一：堆
+
+分别用最大堆和最小堆存储数组左边和右边的数
+
+当两堆的数据个数相等时候，左边堆添加元素。
+采用的方法不是直接将数据插入左边堆，而是将数据先插入右边堆，算法调整后
+将堆顶的数据插入到左边堆，这样保证左边堆插入的元素始终是右边堆的最小值。
+同理左边数据多，往右边堆添加数据的时候，先将数据放入左边堆，选出最大值放到右边堆中。
+
+class MedianFinder {
+public:
+    /** initialize your data structure here. */
+    priority_queue<int, vector<int>, less<int>> maxq;                //记录左边的数据
+    priority_queue<int, vector<int>, greater<int>> minq;             //记录右边的数据
+    MedianFinder() {
+
+    }
+    
+    void addNum(int num) {
+        if(maxq.size()==minq.size()){           //往左边插入数据
+            minq.push(num);
+            int val = minq.top();
+            minq.pop();
+            maxq.push(val);
+        }
+        else{                                   //左边的数据多于右边的数据，往右边插入
+            maxq.push(num);
+            int val = maxq.top();
+            maxq.pop();
+            minq.push(val);
+        }
+    }
+    
+    double findMedian() {
+        if(maxq.size()!=minq.size()){
+            return (double)maxq.top();
+        }
+        else{
+            return (double)(minq.top()+maxq.top())/2;
+        }
+    }
+};
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder* obj = new MedianFinder();
+ * obj->addNum(num);
+ * double param_2 = obj->findMedian();
+ */
+ 
+时间复杂度：查找中位数O(1)：获取堆顶元素使用O(1) 时间；添加数字O(logN)：堆的插入和弹出操作使用O(logN) 时间。
+空间复杂度O(N)：其中N为数据流中的元素数量，小顶堆A和大顶堆B最多同时保存N个元素。
