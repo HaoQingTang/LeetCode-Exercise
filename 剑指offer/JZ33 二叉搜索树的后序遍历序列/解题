@@ -29,29 +29,32 @@ public:
 };
 
 二：栈
-（1）实际上二叉树的中序遍历和后序遍历对应着一种栈的压入、弹出序列, 而对后序遍历序列从小到大排序就得到了中序遍历序列
-（2）我们得到中序遍历序列后, 将其作为入栈序列, 检查后序遍历序列是不是一个合法的出栈序列即可
+
+算法流程：
+初始化：单调栈stack ，父节点值root=+∞ （初始值为正无穷大，可把树的根节点看为此无穷大节点的左孩子）；
+倒序遍历postorder：记每个节点为ri；
+判断：若 ri>root，说明此后序遍历序列不满足二叉搜索树定义，直接返回false ；
+更新父节点root：当栈不为空 且 ri<stack.peek()时，循环执行出栈，并将出栈节点赋给root 。
+入栈：将当前节点ri入栈；
+若遍历完成，则说明后序遍历满足二叉搜索树定义，返回true 。
+
 class Solution {
 public:
-    bool VerifySquenceOfBST(vector<int> sequence) {
-        if(sequence.empty()) return false;
-        vector<int> inorder(sequence);
-        sort(inorder.begin(), inorder.end());
-        return IsPopOrder(inorder, sequence);
+    bool verifyPostorder(vector<int>& postorder) {
+        int len = postorder.size();
+        if(len==0) return false;                     
+        stack<int> stk;
+        int i = len-1;
+        int root = INT_MAX;
+        while(i>=0){
+            if(postorder[i]>root) return false;
+            while(!stk.empty() && postorder[i]<stk.top()){
+                root = stk.top();
+                stk.pop();
+            }
+            stk.push(postorder[i]);
+            i--;
+        }
+        return true;
     }
-
-    bool IsPopOrder(vector<int> pushV,vector<int> popV) {
-         int n = pushV.size();
-         stack<int> stk;    // 使用STL中的栈容器
-         int i = 0, j = 0;
-         while(i < n){
-             stk.push(pushV[i]);    // 首先将pushV[i]入栈
-             while(!stk.empty() && stk.top() == popV[j]){    // 不断检查栈顶
-                 ++j;
-                 stk.pop();
-             }
-             ++i;
-         }
-         return j == n;    // 判断能否成功对应
-     }
 };
