@@ -1,0 +1,30 @@
+【C++】
+
+一：
+
+class Solution {
+public:
+    int maximumCandies(vector<int>& candies, long long k) {
+        long long int sum = 0;
+        for(int candy:candies){
+            sum += candy;
+        }
+        if(sum<k) return 0;
+        sort(candies.begin(), candies.end());
+        int l = 1, r = candies[candies.size()-1];
+        int ans = 0;
+        while(l<=r){
+            int mid = l+(r-l)/2;
+            long long int count = 0;
+            for(int candy:candies){
+                count += candy/mid;
+            }
+            if(count>=k){
+                l = mid+1;
+                ans = mid;
+            }
+            else r = mid-1;
+        }
+        return ans;
+    }
+};
