@@ -1,0 +1,27 @@
+【C++】
+
+一：
+class Solution {
+public:
+    vector<vector<int>> findWinners(vector<vector<int>>& matches) {
+        vector<vector<int>> result;
+        unordered_map<int, int> total, loses;
+        for(vector<int> match:matches){
+            total[match[0]]++;
+            total[match[1]]++;
+            loses[match[1]]++;
+        }
+        vector<int> win, lose;
+        for(auto it=total.begin(); it!=total.end(); it++){
+            if(loses.find(it->first)==loses.end()) win.push_back(it->first);
+        }
+        for(auto it=loses.begin(); it!=loses.end(); it++){
+            if(it->second==1) lose.push_back(it->first);
+        }
+        sort(win.begin(), win.end());
+        sort(lose.begin(), lose.end());
+        result.push_back(win);
+        result.push_back(lose);
+        return result;
+    }
+};
