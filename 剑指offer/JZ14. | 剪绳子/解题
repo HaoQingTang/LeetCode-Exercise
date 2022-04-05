@@ -1,0 +1,45 @@
+【C++】
+
+一：贪心（数学）
+
+class Solution {
+public:
+    int cuttingRope(int n) {
+        //贪心：每次剪长度为3，当剩余为4时，不剪（3*1<2*2）
+        if(n<4) return n-1;
+        int result = 1;
+        while(n>=4){
+            if(n==4) return result*4;
+            result *= 3;
+            n -= 3;
+        }
+        return result*n;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+二：动态规划
+
+class Solution {
+public:
+    int cuttingRope(int n) {
+        vector<int> dp(n+1, 0);
+        dp[2] = 1;
+        //从3开始切，2只能切成1+1
+        for(int i=3; i<=n; i++){
+            //第一段循环， 此时分为2段：第一段长度为j，第二段长度为i-j
+            //若第二段不切，则乘积为j*(i-j)，若第二段切，则乘积为j*dp[i-j]
+            //每次内循环，都要更新dp[i]的值
+            for(int j=2; j<i; j++){
+                int tmp = max(j*(i-j), j*dp[i-j]);
+                dp[i] = max(dp[i], tmp);
+            }
+        }
+        return dp[n];
+    }
+};
+
+时间复杂度：O(n^2)
+空间复杂度：O(n)
