@@ -1,0 +1,58 @@
+【C++】
+
+一：暴力遍历
+
+class Solution {
+public:
+    vector<vector<int>> findContinuousSequence(int target) {
+        vector<vector<int>> result;
+        for(int i=1; i<=target/2; i++){
+            vector<int> tmp;
+            tmp.push_back(i);
+            int sum = i;
+            for(int j=i+1; j<=target/2+1;j++){
+                sum += j;
+                tmp.push_back(j);
+                if(sum==target){
+                    result.push_back(tmp);
+                    break;
+                }
+                else if(sum>target){
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+};
+
+二：双指针（滑动窗口）
+
+窗口内sum==target时，放入数组。
+sum<target时，窗口需要扩大，r++；
+sum>target时，窗口需要缩小，l--。
+
+class Solution {
+public:
+    vector<vector<int>> findContinuousSequence(int target) {
+        vector<vector<int>> result;
+        int l=1, r=2;
+        while(l<r){
+            int sum = (l+r)*(r-l+1)/2;
+            if(sum==target){
+                vector<int> tmp;
+                for(int i=l; i<=r; i++){
+                    tmp.push_back(i);
+                }
+                result.push_back(tmp);
+                l++;
+            }
+            else if(sum>target) l++;
+            else r++;
+        }
+        return result;
+    }
+};
+
+时间复杂度：O(target)
+空间复杂度：O(1)
