@@ -1,0 +1,35 @@
+【C++】
+
+一：滑动窗口
+
+由于「技巧」只会将情绪将「生气」变为「不生气」，不生气仍然是不生气。
+
+我们可以先将原本就满意的客户加入答案，同时将对应的customers[i]变为0。
+
+之后的问题转化为：在 customerscustomers 中找到连续一段长度为 minutesminutes 的子数组，使得其总和最大。这部分就是我们应用技巧所得到的客户。
+
+class Solution {
+public:
+    int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int minutes) {
+        int tmp = 0;
+        int n = customers.size();
+        for(int i=0; i<n; i++){
+            if(grumpy[i]==0){
+                tmp += customers[i];
+                customers[i] = 0;
+            }
+        }
+        int cur = 0, maxval = 0;
+        for(int i=0; i<n; i++){
+            cur += customers[i];
+            if(i>=minutes){
+                cur -= customers[i-minutes];
+            }
+            maxval = max(maxval, cur);
+        }
+        return tmp+maxval;
+    }
+};
+
+时间复杂度：O(n)
+空间复杂度：O(1)
