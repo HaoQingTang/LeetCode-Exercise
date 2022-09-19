@@ -1,0 +1,51 @@
+【C++】
+
+字典树：
+对于每个节点，均有 26 个孩子节点
+
+还有一个点要明确：节点仅仅表示从根节点到本节点的路径构成的字符串是否有效而已
+
+如果现在要找前缀 te 是否存在，分两步：
+首先看看表示 te 字符串的路径是否存在，这个例子是存在的
+其次看看该路径的终点处的节点是否有效，很遗憾，此处为白色，无效
+所以前缀 te 不存在！！
+
+
+class Solution {
+public:
+    struct TreeNode{
+        int val = 0;
+        TreeNode* son[26]{};
+    };
+
+    void insert(TreeNode* root, string word){      //插入单词，构造字典树
+        for(int i=0; i<word.size(); i++){
+            int pos = word[i]-'a';
+            if(root->son[pos]==nullptr){
+                root->son[pos] = new TreeNode();
+            }
+            root->son[pos]->val += 1;
+            root = root->son[pos];
+        }
+    }
+    int query(TreeNode* root, string word){       //查询
+        int sum = 0;
+        for(int i=0; i<word.size(); i++){
+            int pos = word[i]-'a';
+            sum += root->son[pos]->val;
+            root = root->son[pos];
+        }
+        return sum;
+    }
+    vector<int> sumPrefixScores(vector<string>& words) {
+        vector<int> result;
+        TreeNode* root = new TreeNode();
+        for(string word:words){
+            insert(root, word);
+        }
+        for(string word:words){
+            result.push_back(query(root, word));
+        }
+        return result;
+    }
+};
